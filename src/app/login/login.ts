@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ToastService } from '../services/toast-service';
 import { apiUrl } from '../services/api';
@@ -16,7 +16,18 @@ export class Login {
   username = '';
   password = '';
 
-  constructor(private router: Router, private toast: ToastService, private http: HttpClient) {}
+  constructor(
+    private router: Router,
+    private toast: ToastService,
+    private http: HttpClient,
+    private route: ActivatedRoute 
+  ) {
+    this.route.queryParams.subscribe(params => {
+      if ('logout' in params) {
+        this.toast.show('success', 'Wylogowano', 'Wylogowano pomyślnie!');
+      }
+    });
+  }
 
   login() {
     const body = {
