@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { apiUrl } from '../../services/api';
 import { FormsModule } from '@angular/forms';
+import { ToastService } from '../../services/toast-service';
 
 interface UserResponse {
   content: User[];
@@ -54,7 +55,10 @@ export class Users implements OnInit {
   };
   showAddUserForm = false;
 
-  constructor(private http: HttpClient) {}
+  editUserUuid: string | null = null;
+  editUserData: Partial<User> & { password?: string } = {};
+
+  constructor(private http: HttpClient, private toast: ToastService) {}
 
   ngOnInit() {
     this.loadUsers();
@@ -71,6 +75,8 @@ export class Users implements OnInit {
         this.currentPage = response.pageable.pageNumber;
       },
       error: (err) => {
+        const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
+        this.toast.show('error', 'Błąd', msg);
         console.error('Błąd podczas pobierania użytkowników:', err);
       }
     });
@@ -172,8 +178,11 @@ export class Users implements OnInit {
           userType: 'USER',
           password: ''
         };
+        this.toast.show('success', 'Sukces', 'Użytkownik został pomyślnie dodany.');
       },
       error: (err) => {
+        const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
+        this.toast.show('error', 'Błąd', msg);
         console.error('Błąd podczas dodawania użytkownika:', err);
       }
     });
@@ -184,9 +193,57 @@ export class Users implements OnInit {
     this.http.delete(apiUrl(`/auth/users/${uuid}`), { withCredentials: true }).subscribe({
       next: () => {
         this.loadUsers();
+        this.toast.show('success', 'Sukces', 'Użytkownik został pomyślnie usunięty.');
       },
       error: (err) => {
+        const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
+        this.toast.show('error', 'Błąd', msg);
         console.error('Błąd podczas usuwania użytkownika:', err);
+      }
+    });
+  }
+
+  startEditUser(user: User) {
+    this.editUserUuid = user.uuid;
+    this.editUserData = {
+      name: user.name,
+      surname: user.surname,
+      username: user.username,
+      email: user.email,
+      userType: user.userType,
+      password: ''
+    };
+  }
+
+  cancelEditUser() {
+    this.editUserUuid = null;
+    this.editUserData = {};
+  }
+
+  saveEditUser() {
+    if (!this.editUserUuid) return;
+    const payload: any = {
+      name: this.editUserData.name,
+      surname: this.editUserData.surname,
+      username: this.editUserData.username,
+      email: this.editUserData.email,
+      userType: this.editUserData.userType
+    };
+    // Dodaj hasło tylko jeśli zostało wpisane
+    if (this.editUserData.password && this.editUserData.password.trim() !== '') {
+      payload.password = this.editUserData.password;
+    }
+    this.http.put(apiUrl(`/auth/users/${this.editUserUuid}`), payload, { withCredentials: true }).subscribe({
+      next: () => {
+        this.editUserUuid = null;
+        this.editUserData = {};
+        this.loadUsers();
+        this.toast.show('success', 'Sukces', 'Użytkownik został pomyślnie edytowany.');
+      },
+      error: (err) => {
+        const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
+        this.toast.show('error', 'Błąd', msg);
+        console.error('Błąd podczas edycji użytkownika:', err);
       }
     });
   }
