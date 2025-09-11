@@ -1,0 +1,34 @@
+<div class="flex flex-col h-full w-full bg-white rounded-lg shadow p-8">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Spis hal</h1>
+  <!-- Wybór hali -->
+  <div class="flex gap-4 mb-8">
+    @for (hall of halls; track hall.id) {
+      <button
+        class="px-6 py-2 rounded-lg font-bold shadow transition cursor-pointer"
+        [ngClass]="{
+          'bg-orange-600 text-white hover:bg-orange-700': hall === selectedHall,
+          'bg-gray-200 text-gray-700 hover:bg-orange-100 hover:text-orange-700': hall !== selectedHall
+        }"
+        (click)="selectHall(hall)"
+      >
+        {{ hall.name }}
+      </button>
+    }
+  </div>
+  <!-- Lista regałów -->
+  @if (selectedHall) {
+    <div class="flex-1 w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
+      @for (rack of selectedHall.racks; track rack.id) {
+        <div class="bg-gray-100 rounded-lg p-6 shadow flex flex-col items-center h-full">
+          <h2 class="font-semibold text-lg text-gray-700 mb-2">{{ rack.name }}</h2>
+          <div class="w-full flex flex-col items-center mb-4">
+            <span class="text-sm text-gray-500">Zajęte miejsca</span>
+            <span class="text-xl font-bold text-orange-600">{{ rack.occupied }} / {{ rack.total }}</span>
+            <span class="text-xs text-gray-400">zajęte / wszystkie</span>
+          </div>
+          <button class="mt-auto bg-orange-600 text-white px-6 py-2 rounded hover:bg-orange-700 transition cursor-pointer w-full font-semibold">Szczegóły</button>
+        </div>
+      }
+    </div>
+  }
+</div>

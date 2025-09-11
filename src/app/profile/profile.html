@@ -1,0 +1,36 @@
+<div class="relative">
+  <button
+    class="flex items-center gap-2 bg-gray-300 rounded-t-lg px-4 py-2 w-full focus:outline-none transition-all duration-200 cursor-pointer"
+    [ngClass]="{ 'rounded-b-lg': !menuOpen }"
+    (click)="toggleMenu()"
+    type="button"
+  >
+    <span class="font-semibold text-gray-700">{{ userName }}</span>
+    <span class="bg-purple-200 rounded-full p-1">
+      <svg width="24" height="24" fill="none" stroke="purple" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="12" cy="8" r="4" stroke="currentColor"/>
+        <path d="M4 20c0-4 8-4 8-4s8 0 8 4" stroke="currentColor"/>
+      </svg>
+    </span>
+    <span class="ml-1 transition-transform duration-200" [ngStyle]="{ transform: menuOpen ? 'rotate(180deg)' : 'rotate(0deg)' }">
+      <svg width="20" height="20" fill="none" stroke="gray" stroke-width="2" viewBox="0 0 24 24">
+        <polyline points="6 9 12 15 18 9" stroke="currentColor" fill="none"/>
+      </svg>
+    </span>
+  </button>
+  @if (menuOpen){
+    <div
+      class="fixed inset-0 z-10"
+      (click)="closeMenu()"
+      style="background: transparent"
+    ></div>
+    <div
+      class="absolute left-0 top-full w-full bg-gray-300 rounded-b-lg shadow-lg z-10 flex flex-col items-stretch animate-slide-down"
+    >
+    <hr class="border-orange-400 mx-4" />
+      <button class="w-full py-2 px-4 font-bold text-gray-800 hover:bg-gray-200 hover:cursor-pointer transition text-left" routerLink="help" (click)="toggleMenu()">Pomoc</button>
+      <hr class="border-orange-400 mx-4" />
+      <button class="w-full py-2 px-4 font-bold text-gray-900 hover:bg-gray-200 hover:cursor-pointer transition text-left" (click)="logout()">Wyloguj</button>
+    </div>
+  }
+</div>

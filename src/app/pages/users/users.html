@@ -1,0 +1,151 @@
+<div class="flex flex-col h-full w-full bg-white rounded-lg shadow p-8">
+  <h1 class="text-2xl font-bold text-gray-800 mb-4">Użytkownicy</h1>
+  
+  <!-- Przyciski filtrów -->
+  <div class="flex gap-4 mb-4">
+    <button 
+      class="px-4 py-1.5 rounded-lg font-bold shadow transition cursor-pointer"
+      [ngClass]="{'bg-orange-600 text-white hover:bg-orange-700': searchType === 'id', 
+                'bg-gray-200 text-gray-700 hover:bg-orange-100 hover:text-orange-700': searchType !== 'id'}"
+      (click)="setSearchType('id')">
+      ID
+    </button>
+    <button 
+      class="px-4 py-1.5 rounded-lg font-bold shadow transition cursor-pointer flex items-center"
+      [ngClass]="{'bg-orange-600 text-white hover:bg-orange-700': searchType === 'name', 
+                'bg-gray-200 text-gray-700 hover:bg-orange-100 hover:text-orange-700': searchType !== 'name'}"
+      (click)="setSearchType('name')">
+      Nazwisko
+    </button>
+  </div>
+  
+  <!-- Pole wyszukiwania -->
+  <div class="mb-4">
+    <div class="relative max-w-lg">
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery"
+        placeholder="{{searchType === 'id' ? 'Podaj ID' : 'Podaj nazwisko'}}" 
+        class="w-full bg-purple-50 border-none rounded-lg px-4 py-1.5 text-gray-800 pr-10">
+      <button class="absolute right-3 top-1.5" (click)="search()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Tabela -->
+  <div class="flex-1 overflow-auto">
+    <table class="w-full text-center border-separate border-spacing-y-1 text-sm">
+      <thead>
+        <tr class="text-gray-600">
+          <th class="px-4 py-1 font-medium">ID</th>
+          <th class="px-4 py-1 font-medium">Imię</th>
+          <th class="px-4 py-1 font-medium">Nazwisko</th>
+          <th class="px-4 py-1 font-medium">Login</th>
+          <th class="px-4 py-1 font-medium">Email</th>
+          <th class="px-4 py-1 font-medium">Rola</th>
+          <th class="px-4 py-1 font-medium">Status</th>
+          <th class="px-4 py-1 font-medium">Opcje</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of users; let i = $index; track user.uuid) {
+          <tr [ngClass]="i % 2 === 0 ? 'bg-gray-100' : 'bg-white'">
+            <td class="px-4 py-1.5 rounded-l-lg">{{user.uuid.substring(0, 8)}}</td>
+            <td class="px-4 py-1.5">{{user.name}}</td>
+            <td class="px-4 py-1.5">{{user.surname}}</td>
+            <td class="px-4 py-1.5">{{user.username}}</td>
+            <td class="px-4 py-1.5">{{user.email}}</td>
+            <td class="px-4 py-1.5">{{user.userType}}</td>
+            <td class="px-4 py-1.5">
+              <span class="inline-block px-2 py-1 rounded-full text-xs" 
+                  [ngClass]="{'bg-green-100 text-green-800': user.enabled, 'bg-red-100 text-red-800': !user.enabled}">
+                {{user.enabled ? 'Aktywny' : 'Nieaktywny'}}
+              </span>
+            </td>
+            <td class="px-4 py-1.5 rounded-r-lg flex justify-center gap-1">
+              <button class="p-1 text-blue-600 hover:bg-blue-100 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </button>
+              <button class="p-1 text-red-600 hover:bg-red-100 rounded cursor-pointer" (click)="deleteUser(user.uuid)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="8" class="px-4 py-4 text-center text-gray-500">Brak wyników</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Paginacja -->
+  <div class="flex justify-center mt-4">
+    <nav class="flex items-center gap-2">
+      <!-- Przycisk "Poprzednia" -->
+      <button 
+        class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-orange-100 disabled:opacity-50 disabled:cursor-not-allowed"
+        [disabled]="currentPage === 0"
+        (click)="goToPage(currentPage - 1)">
+        <span>&lt;</span>
+      </button>
+      
+      <!-- Przyciski stron -->
+      @for (pageNum of getPageNumbers(); track pageNum) {
+        <!-- Wielokropek (nie klikniecie) -->
+        @if (pageNum < 0) {
+          <span class="mx-1">...</span>
+        } @else {
+          <!-- Przycisk strony -->
+          <button 
+            class="w-8 h-8 flex items-center justify-center rounded-full"
+            [ngClass]="{'bg-orange-600 text-white font-medium': currentPage === pageNum, 'hover:bg-orange-100': currentPage !== pageNum}"
+            (click)="goToPage(pageNum)">
+            {{pageNum + 1}}
+          </button>
+        }
+      }
+      
+      <!-- Przycisk "Następna" -->
+      <button 
+        class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-orange-100 disabled:opacity-50 disabled:cursor-not-allowed"
+        [disabled]="currentPage >= totalPages - 1"
+        (click)="goToPage(currentPage + 1)">
+        <span>&gt;</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Dodawanie użytkownika -->
+  <div class="mb-6">
+    <button 
+      class="bg-orange-600 text-white font-semibold px-6 py-2 rounded-lg shadow hover:bg-orange-700 transition cursor-pointer col-span-2"
+      (click)="showAddUserForm = !showAddUserForm">
+      {{ showAddUserForm ? 'Anuluj dodawanie' : 'Dodaj użytkownika' }}
+    </button>
+  </div>
+  @if (showAddUserForm) {
+    <form class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" (ngSubmit)="addUser()">
+      <input [(ngModel)]="newUser.name" name="name" required placeholder="Imię" class="bg-purple-50 rounded-lg px-4 py-2" />
+      <input [(ngModel)]="newUser.surname" name="surname" required placeholder="Nazwisko" class="bg-purple-50 rounded-lg px-4 py-2" />
+      <input [(ngModel)]="newUser.username" name="username" required placeholder="Login" class="bg-purple-50 rounded-lg px-4 py-2" />
+      <input [(ngModel)]="newUser.email" name="email" required placeholder="Email" class="bg-purple-50 rounded-lg px-4 py-2" />
+      <input [(ngModel)]="newUser.password" name="password" required placeholder="Hasło" type="password" class="bg-purple-50 rounded-lg px-4 py-2" />
+      <select [(ngModel)]="newUser.userType" name="userType" class="bg-purple-50 rounded-lg px-4 py-2">
+        <option value="USER">USER</option>
+        <option value="ADMIN">ADMIN</option>
+      </select>
+      <button type="submit" class="bg-orange-600 text-white font-semibold px-6 py-2 rounded-lg shadow hover:bg-orange-700 transition cursor-pointer col-span-2">Dodaj</button>
+    </form>
+  }

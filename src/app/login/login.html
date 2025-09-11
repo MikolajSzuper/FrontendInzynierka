@@ -1,0 +1,33 @@
+<div class="flex flex-col items-center justify-start min-h-screen bg-gray-100 pt-16">
+  <img src="/logo.png" alt="Logo" class="mb-6 w-34 h-34 object-contain" />
+  <div class="bg-gray-400 shadow-lg rounded-lg p-6 w-full max-w-xs flex flex-col items-center">
+    <form (ngSubmit)="login()" class="w-full flex flex-col gap-4">
+      <label class="flex flex-col gap-1">
+        <span class="text-sm font-medium text-gray-800">Użytkownik</span>
+        <input
+          [(ngModel)]="username"
+          name="username"
+          required
+          placeholder="Login"
+          class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white text-gray-900 placeholder:text-gray-400"
+        />
+      </label>
+      <label class="flex flex-col gap-1">
+        <span class="text-sm font-medium text-gray-800">Hasło</span>
+        <input
+          [(ngModel)]="password"
+          name="password"
+          type="password"
+          required
+          placeholder="******"
+          class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white text-gray-900 placeholder:text-gray-400"
+        />
+      </label>
+      <button
+        type="submit"
+        class="bg-orange-600 text-white rounded py-2 font-semibold hover:bg-orange-700 transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-400"
+      >Zaloguj</button>
+      <a href="#" class="text-xs text-gray-800 underline hover:text-orange-700 text-left">Zapomniałeś hasła?</a>
+    </form>
+  </div>
+</div>

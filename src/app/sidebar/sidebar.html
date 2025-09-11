@@ -1,0 +1,40 @@
+<ul class="space-y-2 px-4">
+  @if (!isAdmin){
+  <li>
+    <a routerLink="halls"
+      routerLinkActive="font-bold text-orange-700 border-b-4 border-orange-600"
+      class="bg-gray-300 block py-2 px-2 rounded transition hover:bg-white hover:text-orange-700 cursor-pointer text-center">
+      Hale
+    </a>
+  </li>
+  <li>
+    <a routerLink="management"
+      routerLinkActive="font-bold text-orange-700 border-b-4 border-orange-600"
+      class="bg-gray-300 block py-2 px-2 rounded transition hover:bg-white hover:text-orange-700 cursor-pointer text-center">
+      Zarządzanie
+    </a>
+  </li>
+  <li>
+    <a routerLink="search"
+      routerLinkActive="font-bold text-orange-700 border-b-4 border-orange-600"
+      class="bg-gray-300 block py-2 px-2 rounded transition hover:bg-white hover:text-orange-700 cursor-pointer text-center">
+      Wyszukaj
+    </a>
+  </li>
+  <li>
+    <a routerLink="inventory"
+      routerLinkActive="font-bold text-orange-700 border-b-4 border-orange-600"
+      class="bg-gray-300 block py-2 px-2 rounded transition hover:bg-white hover:text-orange-700 cursor-pointer text-center">
+      Inwentaryzacja
+    </a>
+  </li>
+  }@else{
+    <li>
+    <a routerLink="users"
+      routerLinkActive="font-bold text-orange-700 border-b-4 border-orange-600"
+      class="bg-gray-300 block py-2 px-2 rounded transition hover:bg-white hover:text-orange-700 cursor-pointer text-center">
+      Użytkownicy
+    </a>
+  </li>
+  }
+</ul>
