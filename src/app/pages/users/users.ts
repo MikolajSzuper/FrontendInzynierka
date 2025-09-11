@@ -4,6 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { apiUrl } from '../../services/api';
 import { FormsModule } from '@angular/forms';
 import { ToastService } from '../../services/toast-service';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 interface UserResponse {
   content: User[];
@@ -43,7 +45,7 @@ export class Users implements OnInit {
   totalPages = 0;
   searchQuery = '';
   searchType: 'id' | 'name' = 'id';
-  pageSize = 5; // domyślna liczba wyników na stronę
+  pageSize = 10; // domyślna liczba wyników na stronę
 
   newUser: Partial<User> & { password?: string } = {
     name: '',
@@ -58,7 +60,20 @@ export class Users implements OnInit {
   editUserUuid: string | null = null;
   editUserData: Partial<User> & { password?: string } = {};
 
-  constructor(private http: HttpClient, private toast: ToastService) {}
+  private searchSubject = new Subject<string>();
+
+  constructor(private http: HttpClient, private toast: ToastService) {
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe((query) => {
+      if (query.length > 2) {
+        this.performSearch(query);
+      } else {
+        this.loadUsers();
+      }
+    });
+  }
 
   ngOnInit() {
     this.loadUsers();
@@ -86,18 +101,24 @@ export class Users implements OnInit {
     this.searchType = type;
   }
 
-  search() {
+  onSearchQueryChange(query: string) {
+    this.searchSubject.next(query);
+  }
+
+  performSearch(query: string) {
     const searchParam = this.searchType === 'id' ? 'uuid' : 'surname';
     const url = apiUrl(
-      `api/auth/users?page=${this.currentPage}&size=${this.pageSize}&${searchParam}=${this.searchQuery}`
+      `/auth/users?page=${this.currentPage}&size=${this.pageSize}&${searchParam}=${query}`
     );
-  this.http.get<UserResponse>(url, { withCredentials: true }).subscribe({
+    this.http.get<UserResponse>(url, { withCredentials: true }).subscribe({
       next: (response) => {
-        this.users = response.content;
-        this.totalPages = response.totalPages;
-        this.currentPage = response.pageable.pageNumber;
+        this.users = Array.isArray(response?.content) ? response.content : [];
+        this.totalPages = Array.isArray(response?.totalPages) ? response.totalPages : 0;
+        this.currentPage = Array.isArray(response?.pageable?.pageNumber) ? response.pageable.pageNumber : 0;
       },
       error: (err) => {
+        const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
+        this.toast.show('error', 'Błąd', msg);
         console.error('Błąd podczas wyszukiwania użytkowników:', err);
       }
     });
@@ -110,13 +131,13 @@ export class Users implements OnInit {
   }
 
   getPageNumbers(): number[] {
-    if (this.totalPages <= 5) {
-      // Jeśli jest 5 lub mniej stron, pokaż wszystkie
+    if (this.totalPages <= 4) {
+      // Jeśli jest 4 lub mniej stron, pokaż wszystkie
       return Array.from({ length: this.totalPages }, (_, i) => i);
     }
 
     const pages: number[] = [];
-    const visiblePages = 3; // Liczba widocznych stron (bez pierwszej/ostatniej i wielokroka)
+    const visiblePages = 2; // Liczba widocznych stron (bez pierwszej/ostatniej i wielokroka)
     
     // Zawsze dodaj pierwszą stronę
     pages.push(0);
