@@ -9,9 +9,6 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   styleUrl: './sidebar.css'
 })
 export class Sidebar {
-  userType = localStorage.getItem('user_type');
-
-  get isAdmin(): boolean {
-    return this.userType === 'ADMIN';
-  }
+  isAdmin = localStorage.getItem('user_type') === 'ADMIN';
+  isSupervisor = localStorage.getItem('user_type') === 'SUPERVISOR';
 }

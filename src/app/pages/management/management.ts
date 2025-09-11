@@ -10,9 +10,10 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './management.css'
 })
 export class Management {
-  activeMode: 'add' | 'edit' | 'delete' = 'add';
-  deleteId: string = '';
-  
+  activeTab: 'addItem' | 'halls' | 'categories' = 'addItem';
+
+  isSupervisor = localStorage.getItem('user_type') === 'SUPERVISOR';
+
   item: {
     id: string;
     name: string;
@@ -29,11 +30,9 @@ export class Management {
     place: ''
   };
 
-  setMode(mode: 'add' | 'edit' | 'delete') {
-    this.activeMode = mode;
-    if (mode === 'delete') {
-      this.clearAllFields();
-    }
+  setTab(tab: 'addItem' | 'halls' | 'categories') {
+    this.activeTab = tab;
+    this.clearAllFields();
   }
 
   clearField(field: keyof typeof this.item) {
@@ -49,6 +48,5 @@ export class Management {
       rack: '',
       place: ''
     };
-    this.deleteId = '';
   }
 }

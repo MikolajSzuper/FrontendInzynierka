@@ -7,9 +7,14 @@ import { Search } from './pages/search/search';
 import { Inventory } from './pages/inventory/inventory';
 import { Users } from './pages/users/users';
 import { Help } from './pages/help/help';
+import { Receipts } from './pages/receipts/receipts';
+import { Issues } from './pages/issues/issues';
+import { Contractors } from './pages/contractors/contractors';
+import { HelpRequest } from './pages/help-request/help-request';  
 import { AuthGuard } from './services/auth.guard';
 import { adminGuard } from './services/admin-guard';
 import { UserGuard } from './services/user-guard';
+import { SupervisorGuard } from './services/supervisor-guard';
 
 export const routes: Routes = [
   { path: '', component: Login },
@@ -22,6 +27,12 @@ export const routes: Routes = [
       { 
         path: 'users', 
         component: Users, 
+        canActivate: [adminGuard]
+      },
+
+      { 
+        path: 'help-request', 
+        component: HelpRequest, 
         canActivate: [adminGuard]
       },
       
@@ -45,6 +56,21 @@ export const routes: Routes = [
         path: 'inventory', 
         component: Inventory, 
         canActivate: [UserGuard]
+      },
+      {
+        path: 'receipts',
+        component: Receipts, 
+        canActivate: [UserGuard]
+      },
+      {
+        path: 'issues',
+        component: Issues, 
+        canActivate: [UserGuard]
+      },
+      {
+        path: 'contractors',
+        component: Contractors,
+        canActivate: [SupervisorGuard] 
       },
       
       // Ścieżki wspólne
