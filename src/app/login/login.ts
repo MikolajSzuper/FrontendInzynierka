@@ -37,9 +37,8 @@ export class Login {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
-    this.http.post<{ token: string; userType: string }>(apiUrl('/auth/login'), body, { headers, withCredentials: true }).subscribe({
+    this.http.post<{ userType: string }>(apiUrl('/auth/login'), body, { headers, withCredentials: true }).subscribe({
       next: (res) => {
-        localStorage.setItem('jwt', res.token);
         localStorage.setItem('user_type', res.userType);
         this.toast.show('success', 'Sukces', 'Zalogowano pomyślnie!');
         if (res.userType === 'ADMIN') {

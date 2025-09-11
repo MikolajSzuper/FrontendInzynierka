@@ -26,13 +26,11 @@ export class Profile {
   logout() {
     this.http.get('/api/auth/logout', { withCredentials: true }).subscribe({
       next: () => {
-        localStorage.removeItem('jwt');
         localStorage.removeItem('user_name');
         localStorage.removeItem('user_type');
         window.location.href = '/?logout=true';
       },
       error: () => {
-        localStorage.removeItem('jwt');
         localStorage.removeItem('user_name');
         localStorage.removeItem('user_type');
         window.location.href = '/?logout=true';

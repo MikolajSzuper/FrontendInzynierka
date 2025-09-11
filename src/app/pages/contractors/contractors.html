@@ -1,1 +1,96 @@
-<p>contractors works!</p>
+<div class="flex flex-col h-full w-full bg-white rounded-lg shadow p-8">
+  <h1 class="text-2xl font-bold text-gray-800 mb-4">Kontrahenci</h1>
+  <div class="flex gap-4 mb-8">
+    <button 
+      class="px-6 py-2 rounded-lg font-bold shadow transition cursor-pointer"
+      [ngClass]="{'bg-orange-600 text-white hover:bg-orange-700': activeTab === 'list', 
+                  'bg-gray-200 text-gray-700 hover:bg-orange-100 hover:text-orange-700': activeTab !== 'list'}"
+      (click)="setTab('list')">
+      Lista kontrahentów
+    </button>
+    <button 
+      class="px-6 py-2 rounded-lg font-bold shadow transition cursor-pointer"
+      [ngClass]="{'bg-orange-600 text-white hover:bg-orange-700': activeTab === 'add', 
+                  'bg-gray-200 text-gray-700 hover:bg-orange-100 hover:text-orange-700': activeTab !== 'add'}"
+      (click)="setTab('add')">
+      Dodaj kontrahenta
+    </button>
+  </div>
+
+  @if (activeTab === 'add') {
+    <form class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" (ngSubmit)="addContractor()">
+      <input [(ngModel)]="newContractor.name" name="name" required placeholder="Nazwa" class="bg-purple-50 rounded-lg px-4 py-2 placeholder-gray-400" />
+      <input [(ngModel)]="newContractor.phone" name="phone" required placeholder="Telefon" class="bg-purple-50 rounded-lg px-4 py-2 placeholder-gray-400" />
+      <input [(ngModel)]="newContractor.email" name="email" required placeholder="Email" class="bg-purple-50 rounded-lg px-4 py-2 placeholder-gray-400" />
+      <button type="submit" class="bg-orange-600 text-white font-semibold px-6 py-2 rounded-lg shadow hover:bg-orange-700 transition cursor-pointer">Dodaj</button>
+    </form>
+  }
+
+  @if (activeTab === 'list') {
+    <div class="flex-1 overflow-auto">
+      <table class="w-full text-center border-separate border-spacing-y-1 text-sm">
+        <thead>
+          <tr class="text-gray-600">
+            <th class="px-4 py-1 font-medium">ID</th>
+            <th class="px-4 py-1 font-medium">Nazwa</th>
+            <th class="px-4 py-1 font-medium">Telefon</th>
+            <th class="px-4 py-1 font-medium">Email</th>
+            <th class="px-4 py-1 font-medium">Opiekun</th>
+            <th class="px-4 py-1 font-medium">Opcje</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (contractor of contractors; let i = $index; track contractor.id) {
+            @if (editId === contractor.id) {
+              <tr [ngClass]="i % 2 === 0 ? 'bg-gray-100' : 'bg-white'">
+                <td class="px-2 py-1 rounded-l-lg">{{contractor.id}}</td>
+                <td class="px-2 py-1">
+                  <input [(ngModel)]="editData.name" name="editName{{contractor.id}}" required placeholder="Nazwa" class="w-full bg-purple-50 rounded-lg px-1 py-1 border placeholder-gray-400" />
+                </td>
+                <td class="px-2 py-1">
+                  <input [(ngModel)]="editData.phone" name="editPhone{{contractor.id}}" required placeholder="Telefon" class="w-full bg-purple-50 rounded-lg px-1 py-1 border placeholder-gray-400" />
+                </td>
+                <td class="px-2 py-1">
+                  <input [(ngModel)]="editData.email" name="editEmail{{contractor.id}}" required placeholder="Email" class="w-full bg-purple-50 rounded-lg px-1 py-1 border placeholder-gray-400" />
+                </td>
+                <td class="px-2 py-1">{{contractor.accountMaganerUsername}}</td>
+                <td class="px-2 py-1 rounded-r-lg flex flex-col gap-1 items-center">
+                  <div class="flex gap-1">
+                    <button type="button" (click)="saveEdit()" class="w-full bg-orange-600 text-white font-semibold px-4 py-1 rounded-lg shadow hover:bg-orange-700 transition cursor-pointer col-span-2">Zapisz</button>
+                    <button type="button" (click)="cancelEdit()" class="w-full bg-gray-200 text-gray-700 px-4 py-1 rounded cursor-pointer hover:bg-orange-100 hover:text-orange-700">Anuluj</button>
+                  </div>
+                </td>
+              </tr>
+            } @else {
+              <tr [ngClass]="i % 2 === 0 ? 'bg-gray-100' : 'bg-white'">
+                <td class="px-4 py-1.5 rounded-l-lg">{{contractor.id}}</td>
+                <td class="px-4 py-1.5">{{contractor.name}}</td>
+                <td class="px-4 py-1.5">{{contractor.phone}}</td>
+                <td class="px-4 py-1.5">{{contractor.email}}</td>
+                <td class="px-4 py-1.5">{{contractor.accountMaganerUsername}}</td>
+                <td class="px-4 py-1.5 rounded-r-lg flex justify-center gap-1">
+                  <button class="p-1 text-blue-600 hover:bg-blue-100 rounded cursor-pointer" (click)="startEdit(contractor)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                  </button>
+                  <button class="p-1 text-red-600 hover:bg-red-100 rounded cursor-pointer" (click)="deleteContractor(contractor.id)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="8" y1="12" x2="16" y2="12"></line>
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            }
+          } @empty {
+            <tr>
+              <td colspan="6" class="px-4 py-4 text-center text-gray-500">Brak kontrahentów</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
