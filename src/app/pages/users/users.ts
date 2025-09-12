@@ -232,6 +232,7 @@ export class Users implements OnInit {
       username: user.username,
       email: user.email,
       userType: user.userType,
+      enabled: user.enabled, 
       password: ''
     };
   }
@@ -248,9 +249,9 @@ export class Users implements OnInit {
       surname: this.editUserData.surname,
       username: this.editUserData.username,
       email: this.editUserData.email,
-      userType: this.editUserData.userType
+      userType: this.editUserData.userType,
+      isEnable: this.editUserData.enabled 
     };
-    // Dodaj hasło tylko jeśli zostało wpisane
     if (this.editUserData.password && this.editUserData.password.trim() !== '') {
       payload.password = this.editUserData.password;
     }

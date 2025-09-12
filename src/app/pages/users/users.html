@@ -80,10 +80,7 @@
                 </select>
               </td>
               <td class="px-2 py-1">
-                <span class="w-full inline-block px-2 py-1 rounded-full text-xs"
-                  [ngClass]="{'bg-green-100 text-green-800': user.enabled, 'bg-red-100 text-red-800': !user.enabled}">
-                  {{user.enabled ? 'Aktywny' : 'Nieaktywny'}}
-                </span>
+                <input [(ngModel)]="editUserData.enabled" type="checkbox" name="editEnabled{{user.uuid}}" />
               </td>
               <td class="px-2 py-1">
                 <input [(ngModel)]="editUserData.password" name="editPassword{{user.uuid}}" placeholder="Nowe hasło" type="password" class="w-full bg-purple-50 rounded-lg px-1 py-1 border mb-1 placeholder-gray-400" />
