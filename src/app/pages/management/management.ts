@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { apiUrl } from '../../services/api';
 import { WAREHOUSE_UUID } from '../../app.config';
+import { ToastService } from '../../services/toast-service';
 
 interface Place {
   id: number;
@@ -58,6 +59,18 @@ export class Management {
     place: ''
   };
 
+  product = {
+    rfid: '',
+    name: '',
+    category: '',
+    description: '',
+    weight: null,
+    height: null,
+    width: null,
+    spot: '',
+    contractor: ''
+  };
+
   // Dane do widoku hal
   places: Place[] = [];
   halls: number[] = [];
@@ -75,7 +88,15 @@ export class Management {
 
   hallsInfo: HallInfo[] = [];
 
-  constructor(private http: HttpClient) {}
+  contractors: { id: number, name: string }[] = [];
+
+  constructor(private http: HttpClient, private toast: ToastService) {}
+
+  ngOnInit() {
+    this.loadCategories();
+    this.loadContractors();
+    this.loadPlaces();
+  }
 
   setTab(tab: 'addItem' | 'halls' | 'categories') {
     this.activeTab = tab;
@@ -100,6 +121,17 @@ export class Management {
       hall: '',
       rack: '',
       place: ''
+    };
+    this.product = {
+      rfid: '',
+      name: '',
+      category: '',
+      description: '',
+      weight: null,
+      height: null,
+      width: null,
+      spot: '',
+      contractor: ''
     };
   }
 
@@ -154,7 +186,7 @@ export class Management {
       },
       error: (err) => {
         const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
-        // this.toast.show('error', 'Błąd', msg);
+        this.toast.show('error', 'Błąd', msg);
         console.error('Błąd podczas pobierania miejsc:', err);
       }
     });
@@ -167,8 +199,21 @@ export class Management {
       },
       error: (err) => {
         const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
-        // this.toast?.show('error', 'Błąd', msg);
+        this.toast.show('error', 'Błąd', msg);
         console.error('Błąd podczas pobierania kategorii:', err);
+      }
+    });
+  }
+
+  loadContractors() {
+    this.http.get<any[]>(apiUrl('/contractors/'), { withCredentials: true }).subscribe({
+      next: (data) => {
+        this.contractors = data;
+      },
+      error: (err) => {
+        const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
+        this.toast.show('error', 'Błąd', msg);
+        console.error('Błąd podczas pobierania kontrahentów:', err);
       }
     });
   }
@@ -179,10 +224,11 @@ export class Management {
       next: () => {
         this.newCategoryName = '';
         this.loadCategories();
+        this.toast.show('success', 'Sukces', 'Kategoria została dodana');
       },
       error: (err) => {
         const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
-        // this.toast?.show('error', 'Błąd', msg);
+        this.toast.show('error', 'Błąd', msg);
         console.error('Błąd podczas dodawania kategorii:', err);
       }
     });
@@ -193,10 +239,11 @@ export class Management {
     this.http.delete(apiUrl(`/products/categories/${id}`), { withCredentials: true }).subscribe({
       next: () => {
         this.loadCategories();
+        this.toast.show('success', 'Sukces', 'Kategoria została usunięta');
       },
       error: (err) => {
         const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
-        // this.toast?.show('error', 'Błąd', msg);
+        this.toast.show('error', 'Błąd', msg);
         console.error('Błąd podczas usuwania kategorii:', err);
       }
     });
@@ -235,6 +282,7 @@ export class Management {
       },
       error: (err) => {
         const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
+        this.toast.show('error', 'Błąd', msg);
         console.error('Błąd dodawania hali:', err);
       }
     });
@@ -269,7 +317,7 @@ export class Management {
       next: (response: any) => {
         if (response?.uuid) {
           // Dodaj miejsce "Miejsce 1"
-          this.addPlace(response.uuid, 1);
+          this.addPlace(response.uuid);
         } else {
           this.loadPlaces();
         }
@@ -281,22 +329,63 @@ export class Management {
     });
   }
 
-  addPlace(shelf_uuid: string, placeNumber: number) {
-    const spotName = `Miejsce ${placeNumber}`;
+  addPlace(shelf_uuid: string) {
+    // Pobierz liczbę miejsc na danym regale
+    const currentPlaces = this.places.filter(p => p.shelf_uuid === shelf_uuid);
+    const nextPlaceNumber = currentPlaces.length + 1;
+    const spotName = `Miejsce ${nextPlaceNumber}`;
     this.http.post(
       apiUrl(`/warehouseManagement/shelves/${shelf_uuid}/spots`),
       { name: spotName },
       { withCredentials: true }
     ).subscribe({
-      next: () => this.loadPlaces(),
+      next: () => { 
+        this.loadPlaces(); 
+        this.toast.show('success', 'Sukces', 'Miejsce zostało dodane');
+      },
       error: (err) => {
         const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
+        this.toast.show('error', 'Błąd', msg);
         console.error('Błąd dodawania miejsca:', err);
+      }
+    });
+  }
+
+  addProduct() {
+    const payload = {
+      rfid: this.product.rfid,
+      name: this.product.name,
+      category: Number(this.product.category),
+      description: this.product.description,
+      weight: this.product.weight,
+      height: this.product.height,
+      width: this.product.width,
+      spot: Number(this.product.spot),
+      contractor: Number(this.product.contractor)
+    };
+    this.http.post(apiUrl('/products'), payload, { withCredentials: true }).subscribe({
+      next: () => {
+        // Zaktualizuj lokalnie miejsce jako zajęte
+        const spotId = Number(this.product.spot);
+        const place = this.places.find(p => p.id === spotId);
+        if (place) place._free = false;
+
+        this.clearAllFields();
+        this.toast.show('success', 'Sukces', 'Produkt został dodany');
+      },
+      error: (err) => {
+        const msg = err?.error?.message || 'Wystąpił błąd';
+        this.toast.show('error', 'Błąd', msg);
+        console.error('Błąd dodawania produktu:', err);
       }
     });
   }
 
   getPlacesForShelf(shelf_uuid: string): Place[] {
     return this.places.filter(p => p.shelf_uuid === shelf_uuid);
+  }
+
+  getFreePlaces(): Place[] {
+    return this.places.filter(p => p._free);
   }
 }

@@ -4,12 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { apiUrl } from './api';
 
-// Pomocnicza funkcja do pobierania ciasteczka po nazwie
-function getCookie(name: string): string | null {
-  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-  return match ? decodeURIComponent(match[2]) : null;
-}
-
 export const AuthGuard: CanActivateFn = async (route, state) => {
   const router = inject(Router);
   const http = inject(HttpClient);

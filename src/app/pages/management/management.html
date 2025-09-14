@@ -30,85 +30,78 @@
 
   <!-- Formularz dodawania towaru -->
   @if (activeTab === 'addItem') {
-    <form class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+    <form class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8" (ngSubmit)="addProduct()">
       <div>
-        <label class="block text-xs text-gray-600 mb-1">ID</label>
-        <div class="relative">
-          <input type="text" [(ngModel)]="item.id" name="id" placeholder="np. 1FG44554HGD" class="w-full bg-purple-50 border-none rounded-lg px-4 py-2 text-gray-800 font-semibold placeholder:text-gray-400" />
-          <button type="button" (click)="clearField('id')" class="absolute right-3 top-2.5 text-gray-400 hover:text-orange-600 cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
+        <label class="block text-xs text-gray-600 mb-1">RFID</label>
+        <input type="text" [(ngModel)]="product.rfid" name="rfid" required
+          placeholder="np. 245376811"
+          class="w-full bg-gray-300 border-none rounded-lg px-4 py-2 text-gray-900 font-semibold placeholder-gray-400" />
       </div>
       <div>
         <label class="block text-xs text-gray-600 mb-1">Nazwa</label>
-        <div class="relative">
-          <input type="text" [(ngModel)]="item.name" name="name" placeholder="np. Śruby M8" class="w-full bg-purple-50 border-none rounded-lg px-4 py-2 text-gray-800 font-semibold placeholder:text-gray-400" />
-          <button type="button" (click)="clearField('name')" class="absolute right-3 top-2.5 text-gray-400 hover:text-orange-600 cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
+        <input type="text" [(ngModel)]="product.name" name="name" required
+          placeholder="np. Krzesło biurowe"
+          class="w-full bg-gray-300 border-none rounded-lg px-4 py-2 text-gray-900 font-semibold placeholder-gray-400" />
       </div>
       <div>
         <label class="block text-xs text-gray-600 mb-1">Kategoria</label>
-        <div class="relative">
-          <input type="text" [(ngModel)]="item.category" name="category" placeholder="np. Mechanika" class="w-full bg-purple-50 border-none rounded-lg px-4 py-2 text-gray-800 font-semibold placeholder:text-gray-400" />
-          <button type="button" (click)="clearField('category')" class="absolute right-3 top-2.5 text-gray-400 hover:text-orange-600 cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
+        <select [(ngModel)]="product.category" name="category" required
+          class="w-full bg-gray-300 border-none rounded-lg px-4 py-2 text-gray-900 font-semibold">
+          <option value="" disabled selected hidden>Wybierz kategorię...</option>
+          @for (cat of categories; track cat.id) {
+            <option [value]="cat.id">{{cat.name}}</option>
+          }
+        </select>
       </div>
       <div>
-        <label class="block text-xs text-gray-600 mb-1">Hala</label>
-        <div class="relative">
-          <input type="text" [(ngModel)]="item.hall" name="hall" placeholder="np. A" class="w-full bg-purple-50 border-none rounded-lg px-4 py-2 text-gray-800 font-semibold placeholder:text-gray-400" />
-          <button type="button" (click)="clearField('hall')" class="absolute right-3 top-2.5 text-gray-400 hover:text-orange-600 cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
+        <label class="block text-xs text-gray-600 mb-1">Opis</label>
+        <input type="text" [(ngModel)]="product.description" name="description"
+          placeholder="np. Dobrej jakości krzesło"
+          class="w-full bg-gray-300 border-none rounded-lg px-4 py-2 text-gray-900 font-semibold placeholder-gray-400" />
       </div>
       <div>
-        <label class="block text-xs text-gray-600 mb-1">Regał</label>
-        <div class="relative">
-          <input type="text" [(ngModel)]="item.rack" name="rack" placeholder="np. 5" class="w-full bg-purple-50 border-none rounded-lg px-4 py-2 text-gray-800 font-semibold placeholder:text-gray-400" />
-          <button type="button" (click)="clearField('rack')" class="absolute right-3 top-2.5 text-gray-400 hover:text-orange-600 cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
+        <label class="block text-xs text-gray-600 mb-1">Waga [kg]</label>
+        <input type="number" [(ngModel)]="product.weight" name="weight" step="0.01"
+          placeholder="np. 1.8"
+          class="w-full bg-gray-300 border-none rounded-lg px-4 py-2 text-gray-900 font-semibold placeholder-gray-400" />
+      </div>
+      <div>
+        <label class="block text-xs text-gray-600 mb-1">Wysokość [cm]</label>
+        <input type="number" [(ngModel)]="product.height" name="height" step="0.01"
+          placeholder="np. 85"
+          class="w-full bg-gray-300 border-none rounded-lg px-4 py-2 text-gray-900 font-semibold placeholder-gray-400" />
+      </div>
+      <div>
+        <label class="block text-xs text-gray-600 mb-1">Szerokość [cm]</label>
+        <input type="number" [(ngModel)]="product.width" name="width" step="0.01"
+          placeholder="np. 32.5"
+          class="w-full bg-gray-300 border-none rounded-lg px-4 py-2 text-gray-900 font-semibold placeholder-gray-400" />
       </div>
       <div>
         <label class="block text-xs text-gray-600 mb-1">Miejsce</label>
-        <div class="relative">
-          <input type="text" [(ngModel)]="item.place" name="place" placeholder="np. 7" class="w-full bg-purple-50 border-none rounded-lg px-4 py-2 text-gray-800 font-semibold placeholder:text-gray-400" />
-          <button type="button" (click)="clearField('place')" class="absolute right-3 top-2.5 text-gray-400 hover:text-orange-600 cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
+        <select [(ngModel)]="product.spot" name="spot" required
+          class="w-full bg-gray-300 border-none rounded-lg px-4 py-2 text-gray-900 font-semibold">
+          <option value="" disabled selected hidden>Wybierz miejsce...</option>
+          @for (place of getFreePlaces(); track place.id) {
+            <option [value]="place.id">{{place.spot_name}} ({{place.hall_name}}/{{place.shelf_name}})</option>
+          }
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs text-gray-600 mb-1">Kontrahent</label>
+        <select [(ngModel)]="product.contractor" name="contractor" required
+          class="w-full bg-gray-300 border-none rounded-lg px-4 py-2 text-gray-900 font-semibold">
+          <option value="" disabled selected hidden>Wybierz kontrahenta...</option>
+          @for (c of contractors; track c.id) {
+            <option [value]="c.id">{{c.name}}</option>
+          }
+        </select>
+      </div>
+      <div class="flex gap-4 col-span-full">
+        <button type="submit" class="bg-orange-600 text-white font-semibold px-8 py-2 rounded-lg hover:bg-orange-700 transition cursor-pointer">Dodaj towar</button>
+        <button type="button" (click)="clearAllFields()" class="text-gray-800 font-semibold px-8 py-2 rounded-lg hover:bg-orange-100 transition cursor-pointer">Wyczyść</button>
       </div>
     </form>
-    <div class="flex gap-4">
-      <button class="bg-orange-600 text-white font-semibold px-8 py-2 rounded-lg hover:bg-orange-700 transition cursor-pointer">Dodaj towar
-      </button>
-      <button type="button" (click)="clearAllFields()" class="text-gray-800 font-semibold px-8 py-2 rounded-lg hover:bg-orange-100 transition cursor-pointer">Wyczyść</button>
-    </div>
   }
 
   <!-- Zakładka Hale -->
@@ -131,25 +124,25 @@
                       </li>
                     }
                   </ul>
-                  <button (click)="addPlace(shelf.shelf_uuid, shelfIdx + 1)" class="bg-orange-600 text-white px-2 py-0.5 rounded shadow mt-2 hover:bg-orange-700 transition text-xs font-semibold">Dodaj miejsce</button>
+                  <button (click)="addPlace(shelf.shelf_uuid)" class="bg-orange-600 text-white px-2 py-0.5 rounded shadow mt-2 cursor-pointer hover:bg-orange-700 transition text-xs font-semibold">Dodaj miejsce</button>
                 </div>
               }
             </div>
             <div class="flex gap-1 items-center mb-1">
-              <button (click)="addShelf(hall.hall_uuid)" class="bg-orange-600 text-white px-3 py-1 rounded shadow hover:bg-orange-700 transition text-xs font-semibold">Dodaj regał</button>
+              <button (click)="addShelf(hall.hall_uuid)" class="bg-orange-600 text-white px-3 py-1 rounded shadow cursor-pointer hover:bg-orange-700 transition text-xs font-semibold">Dodaj regał</button>
             </div>
           </div>
         }
       </div>
       <div class="mb-6 flex gap-4 items-center mt-4">
-        <button (click)="addHall()" class="bg-orange-600 text-white px-4 py-1 rounded shadow hover:bg-orange-700 transition text-sm font-semibold">Dodaj halę</button>
+        <button (click)="addHall()" class="bg-orange-600 text-white px-4 py-1 rounded shadow cursor-pointer hover:bg-orange-700 transition text-sm font-semibold">Dodaj halę</button>
       </div>
     </div>
   }
   @if (activeTab === 'categories' && isSupervisor) {
   <div>
     <form class="flex gap-4 mb-6" (ngSubmit)="addCategory()">
-      <input [(ngModel)]="newCategoryName" name="newCategoryName" required placeholder="Nowa kategoria" class="bg-purple-50 rounded-lg px-4 py-2 placeholder-gray-400 border" />
+      <input [(ngModel)]="newCategoryName" name="newCategoryName" required placeholder="Nowa kategoria" class="bg-gray-300 rounded-lg px-4 py-2 placeholder-gray-400" />
       <button type="submit" class="bg-orange-600 text-white font-semibold px-6 py-2 rounded-lg shadow hover:bg-orange-700 transition cursor-pointer">Dodaj</button>
     </form>
     <div class="flex-1 overflow-auto">
