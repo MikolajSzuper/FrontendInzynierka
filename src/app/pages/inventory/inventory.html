@@ -1,1 +1,78 @@
-<p>inventory works!</p>
+<div class="flex flex-col h-full w-full bg-white rounded-lg shadow p-8">
+  <h1 class="text-2xl font-bold text-gray-800 mb-6">Inwentaryzacja</h1>
+  <!-- Wybór hali -->
+  <div class="flex gap-4 mb-8">
+    @for (hall of halls; track hall.uuid) {
+      <button
+        (click)="selectHall(hall.uuid)"
+        [ngClass]="{
+          'bg-orange-600 text-white hover:bg-orange-700': selectedHallUuid === hall.uuid,
+          'bg-gray-200 text-gray-700 hover:bg-orange-100 hover:text-orange-700': selectedHallUuid !== hall.uuid
+        }"
+        class="px-6 py-2 rounded-lg font-bold shadow transition cursor-pointer"
+      >
+        {{ hall.name }}
+      </button>
+    }
+  </div>
+  @if (loading) {
+    <div class="text-center text-gray-500 py-8">Ładowanie...</div>
+  }
+  @if (!loading) {
+    @for (shelf of shelves; track shelf) {
+      <h2 class="text-lg font-bold text-gray-700 mt-6 mb-2">{{ shelf }}</h2>
+      <table class="w-full text-center border-separate border-spacing-y-1 text-sm mb-4">
+        <thead>
+          <tr class="text-gray-600">
+            <th class="px-4 py-1 font-medium">ID</th>
+            <th class="px-4 py-1 font-medium">Nazwa</th>
+            <th class="px-4 py-1 font-medium">Kategoria</th>
+            <th class="px-4 py-1 font-medium">Miejsce</th>
+            <th class="px-4 py-1 font-medium">Kontrahent</th>
+            <th class="px-4 py-1 font-medium">Data modyfikacji</th>
+            <th class="px-4 py-1 font-medium">Zgadza się</th>
+            <th class="px-4 py-1 font-medium">Nie zgadza się</th>
+            @if (hasIncorrectProduct(shelf)) {
+              <th class="px-4 py-1 font-medium">Uwagi</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (prod of inventory[shelf]; let i = $index; track prod.uuid) {
+            <tr [ngClass]="i % 2 === 0 ? 'bg-gray-100' : 'bg-white'">
+              <td class="px-2 py-1 rounded-l-lg">{{ prod.rfid }}</td>
+              <td class="px-2 py-1">{{ prod.name }}</td>
+              <td class="px-2 py-1">{{ prod.category }}</td>
+              <td class="px-2 py-1">{{ prod.spot }}</td>
+              <td class="px-2 py-1">{{ prod.contractor }}</td>
+              <td class="px-2 py-1">{{ prod.updated_at | date:'yyyy-MM-dd' }}</td>
+              <td class="px-2 py-1">
+                <input type="checkbox"
+                       [checked]="prod.isCorrect"
+                       (change)="setCorrect(shelf, i, true)" />
+              </td>
+              <td class="px-2 py-1">
+                <input type="checkbox"
+                       [checked]="!prod.isCorrect"
+                       (change)="setCorrect(shelf, i, false)" />
+              </td>
+              <td class="px-2 py-1 rounded-r-lg">
+                @if (!prod.isCorrect) {
+                  <input
+                    [(ngModel)]="prod.note"
+                    placeholder="Stan wynosi..."
+                    class="bg-gray-300 rounded-lg px-2 py-1 w-full placeholder-gray-400"
+                  />
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+    <div class="flex gap-4 mt-6">
+      <button class="bg-orange-600 text-white font-semibold px-6 py-2 rounded-lg shadow hover:bg-orange-700 transition cursor-pointer" (click)="saveInventory()">Zatwierdź halę</button>
+      <button class="bg-orange-200 text-gray-800 font-semibold px-6 py-2 rounded-lg shadow hover:bg-orange-300 transition cursor-pointer">Uwagi ogólne do stany hali</button>
+    </div>
+  }
+</div>

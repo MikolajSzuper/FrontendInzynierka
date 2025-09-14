@@ -142,7 +142,7 @@
   @if (activeTab === 'categories' && isSupervisor) {
   <div>
     <form class="flex gap-4 mb-6" (ngSubmit)="addCategory()">
-      <input [(ngModel)]="newCategoryName" name="newCategoryName" required placeholder="Nowa kategoria" class="bg-gray-300 rounded-lg px-4 py-2 placeholder-gray-400" />
+      <input [(ngModel)]="newCategoryName" name="newCategoryName" required placeholder="Nowa kategoria" class="bg-gray-300 rounded-lg px-4 py-2 placeholder-gray-400 font-semibold" />
       <button type="submit" class="bg-orange-600 text-white font-semibold px-6 py-2 rounded-lg shadow hover:bg-orange-700 transition cursor-pointer">Dodaj</button>
     </form>
     <div class="flex-1 overflow-auto">

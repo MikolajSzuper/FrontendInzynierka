@@ -3,23 +3,23 @@
 
   <!-- Filtry -->
   <form class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6" (ngSubmit)="onFilterChange()">
-    <input [(ngModel)]="filter.uuid" name="uuid" placeholder="UUID" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400" (ngModelChange)="onFilterChange()" />
-    <input [(ngModel)]="filter.rfid" name="rfid" placeholder="RFID" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400" (ngModelChange)="onFilterChange()" />
-    <input [(ngModel)]="filter.name" name="name" placeholder="Nazwa" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400" (ngModelChange)="onFilterChange()" />
-    <select [(ngModel)]="filter.category" name="filterCategory" class="bg-gray-100 rounded-lg px-4 py-2" (ngModelChange)="onFilterChange()">
+    <input [(ngModel)]="filter.uuid" name="uuid" placeholder="UUID" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400 font-semibold" (ngModelChange)="onFilterChange()" />
+    <input [(ngModel)]="filter.rfid" name="rfid" placeholder="RFID" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400 font-semibold" (ngModelChange)="onFilterChange()" />
+    <input [(ngModel)]="filter.name" name="name" placeholder="Nazwa" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400 font-semibold" (ngModelChange)="onFilterChange()" />
+    <select [(ngModel)]="filter.category" name="filterCategory" class="bg-gray-100 rounded-lg px-4 py-2 font-semibold" (ngModelChange)="onFilterChange()">
       <option value="">Wybierz kategorię...</option>
       @for (cat of categories; track cat.id) {
         <option [value]="cat.name">{{cat.name}}</option>
       }
     </select>
-    <select [(ngModel)]="filter.spot" name="filterSpot" class="bg-gray-100 rounded-lg px-4 py-2" (ngModelChange)="onFilterChange()">
+    <select [(ngModel)]="filter.spot" name="filterSpot" class="bg-gray-100 rounded-lg px-4 py-2 font-semibold" (ngModelChange)="onFilterChange()">
       <option value="">Wybierz zajęte miejsce...</option>
       @for (place of getOccupiedPlaces(); track place.id) {
         <option [value]="place.id">{{place.spot_name}} ({{place.hall_name}}/{{place.shelf_name}})</option>
       }
     </select>
-    <input [(ngModel)]="filter.contractor" name="contractor" placeholder="Kontrahent" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400" (ngModelChange)="onFilterChange()" />
-    <input type="date" [(ngModel)]="filter.updated_at" name="updated_at" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400" (ngModelChange)="onFilterChange()" />
+    <input [(ngModel)]="filter.contractor" name="contractor" placeholder="Kontrahent" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400 font-semibold" (ngModelChange)="onFilterChange()" />
+    <input type="date" [(ngModel)]="filter.updated_at" name="updated_at" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400 font-semibold" (ngModelChange)="onFilterChange()" />
   </form>
 
   <!-- Tabela wyników -->
