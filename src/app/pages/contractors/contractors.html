@@ -45,13 +45,13 @@
               <tr [ngClass]="i % 2 === 0 ? 'bg-gray-100' : 'bg-white'">
                 <td class="px-2 py-1 rounded-l-lg">{{contractor.id}}</td>
                 <td class="px-2 py-1">
-                  <input [(ngModel)]="editData.name" name="editName{{contractor.id}}" required placeholder="Nazwa" class="w-full bg-purple-50 rounded-lg px-1 py-1 border placeholder-gray-400" />
+                  <input [(ngModel)]="editData.name" name="editName{{contractor.id}}" required placeholder="Nazwa" class="w-full bg-gray-300 rounded-lg px-1 py-1 border placeholder-gray-400" />
                 </td>
                 <td class="px-2 py-1">
-                  <input [(ngModel)]="editData.phone" name="editPhone{{contractor.id}}" required placeholder="Telefon" class="w-full bg-purple-50 rounded-lg px-1 py-1 border placeholder-gray-400" />
+                  <input [(ngModel)]="editData.phone" name="editPhone{{contractor.id}}" required placeholder="Telefon" class="w-full bg-gray-300 rounded-lg px-1 py-1 border placeholder-gray-400" />
                 </td>
                 <td class="px-2 py-1">
-                  <input [(ngModel)]="editData.email" name="editEmail{{contractor.id}}" required placeholder="Email" class="w-full bg-purple-50 rounded-lg px-1 py-1 border placeholder-gray-400" />
+                  <input [(ngModel)]="editData.email" name="editEmail{{contractor.id}}" required placeholder="Email" class="w-full bg-gray-300 rounded-lg px-1 py-1 border placeholder-gray-400" />
                 </td>
                 <td class="px-2 py-1">{{contractor.accountMaganerUsername}}</td>
                 <td class="px-2 py-1 rounded-r-lg flex flex-col gap-1 items-center">

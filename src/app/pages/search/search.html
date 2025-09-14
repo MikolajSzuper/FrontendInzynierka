@@ -6,10 +6,20 @@
     <input [(ngModel)]="filter.uuid" name="uuid" placeholder="UUID" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400" (ngModelChange)="onFilterChange()" />
     <input [(ngModel)]="filter.rfid" name="rfid" placeholder="RFID" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400" (ngModelChange)="onFilterChange()" />
     <input [(ngModel)]="filter.name" name="name" placeholder="Nazwa" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400" (ngModelChange)="onFilterChange()" />
-    <input [(ngModel)]="filter.category" name="category" placeholder="Kategoria" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400" (ngModelChange)="onFilterChange()" />
-    <input [(ngModel)]="filter.spot" name="spot" placeholder="Miejsce" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400" (ngModelChange)="onFilterChange()" />
+    <select [(ngModel)]="filter.category" name="filterCategory" class="bg-gray-100 rounded-lg px-4 py-2" (ngModelChange)="onFilterChange()">
+      <option value="">Wybierz kategorię...</option>
+      @for (cat of categories; track cat.id) {
+        <option [value]="cat.name">{{cat.name}}</option>
+      }
+    </select>
+    <select [(ngModel)]="filter.spot" name="filterSpot" class="bg-gray-100 rounded-lg px-4 py-2" (ngModelChange)="onFilterChange()">
+      <option value="">Wybierz zajęte miejsce...</option>
+      @for (place of getOccupiedPlaces(); track place.id) {
+        <option [value]="place.id">{{place.spot_name}} ({{place.hall_name}}/{{place.shelf_name}})</option>
+      }
+    </select>
     <input [(ngModel)]="filter.contractor" name="contractor" placeholder="Kontrahent" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400" (ngModelChange)="onFilterChange()" />
-    <input [(ngModel)]="filter.updated_at" name="updated_at" placeholder="Data aktualizacji" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400" (ngModelChange)="onFilterChange()" />
+    <input type="date" [(ngModel)]="filter.updated_at" name="updated_at" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400" (ngModelChange)="onFilterChange()" />
   </form>
 
   <!-- Tabela wyników -->
@@ -37,33 +47,33 @@
             <tr [ngClass]="i % 2 === 0 ? 'bg-gray-100' : 'bg-white'">
               <td class="px-2 py-1">{{product.uuid}}</td>
               <td class="px-2 py-1">
-                <input [(ngModel)]="editProductData.name" name="editName{{product.uuid}}" required placeholder="Nazwa" class="w-full bg-gray-100 rounded-lg px-1 py-1 border placeholder-gray-400" />
+                <input [(ngModel)]="editProductData.name" name="editName{{product.uuid}}" required placeholder="Nazwa" class="w-full bg-gray-300 rounded-lg px-4 py-1 border placeholder-gray-400" />
               </td>
               <td class="px-2 py-1">
-                <input [(ngModel)]="editProductData.rfid" name="editRfid{{product.uuid}}" required placeholder="RFID" class="w-full bg-gray-100 rounded-lg px-1 py-1 border placeholder-gray-400" />
+                <input [(ngModel)]="editProductData.rfid" name="editRfid{{product.uuid}}" required placeholder="RFID" class="w-full bg-gray-300 rounded-lg px-4 py-1 border placeholder-gray-400" />
               </td>
               <td class="px-2 py-1">
-                <select [(ngModel)]="editProductData.category" name="editCategory{{product.uuid}}" class="w-full bg-gray-100 rounded-lg px-1 py-1 border">
+                <select [(ngModel)]="editProductData.category" name="editCategory{{product.uuid}}" class="w-full bg-gray-300 rounded-lg px-4 py-1 border">
                   @for (cat of categories; track cat.id) {
                     <option [value]="cat.id">{{cat.name}}</option>
                   }
                 </select>
               </td>
               <td class="px-2 py-1">
-                <input [(ngModel)]="editProductData.description" name="editDescription{{product.uuid}}" placeholder="Opis" class="w-full bg-gray-100 rounded-lg px-1 py-1 border placeholder-gray-400" />
+                <input [(ngModel)]="editProductData.description" name="editDescription{{product.uuid}}" placeholder="Opis" class="w-full bg-gray-300 rounded-lg px-4 py-1 border placeholder-gray-400" />
               </td>
               <td class="px-2 py-1">
-                <input type="number" [(ngModel)]="editProductData.weight" name="editWeight{{product.uuid}}" step="0.01" placeholder="Waga" class="w-full bg-gray-100 rounded-lg px-1 py-1 border placeholder-gray-400" />
+                <input type="number" [(ngModel)]="editProductData.weight" name="editWeight{{product.uuid}}" step="0.01" placeholder="Waga" class="w-full bg-gray-300 rounded-lg px-4 py-1 border placeholder-gray-400" />
               </td>
               <td class="px-2 py-1">
-                <input type="number" [(ngModel)]="editProductData.height" name="editHeight{{product.uuid}}" step="0.01" placeholder="Wysokość" class="w-full bg-gray-100 rounded-lg px-1 py-1 border placeholder-gray-400" />
+                <input type="number" [(ngModel)]="editProductData.height" name="editHeight{{product.uuid}}" step="0.01" placeholder="Wysokość" class="w-full bg-gray-300 rounded-lg px-4 py-1 border placeholder-gray-400" />
               </td>
               <td class="px-2 py-1">
-                <input type="number" [(ngModel)]="editProductData.width" name="editWidth{{product.uuid}}" step="0.01" placeholder="Szerokość" class="w-full bg-gray-100 rounded-lg px-1 py-1 border placeholder-gray-400" />
+                <input type="number" [(ngModel)]="editProductData.width" name="editWidth{{product.uuid}}" step="0.01" placeholder="Szerokość" class="w-full bg-gray-300 rounded-lg px-4 py-1 border placeholder-gray-400" />
               </td>
               <td class="px-2 py-1">
                 <select [(ngModel)]="editProductData.spot" name="editSpot{{product.uuid}}" required
-                  class="w-full bg-gray-300 border-none rounded-lg px-4 py-2 text-gray-900 font-semibold">
+                  class="w-full bg-gray-300 rounded-lg px-4 py-1 border">
                   <option value="" disabled selected hidden>Wybierz miejsce...</option>
                   @for (place of getFreePlaces(); track place.id) {
                     <option [value]="place.id">{{place.spot_name}} ({{place.hall_name}}/{{place.shelf_name}})</option>
@@ -72,7 +82,7 @@
               </td>
               <td class="px-2 py-1">
                 <select [(ngModel)]="editProductData.contractor" name="editContractor{{product.uuid}}" required
-                  class="w-full bg-gray-300 border-none rounded-lg px-4 py-2 text-gray-900 font-semibold">
+                  class="w-full bg-gray-300 rounded-lg px-4 py-1 border">
                   <option value="" disabled selected hidden>Wybierz kontrahenta...</option>
                   @for (c of contractors; track c.id) {
                     <option [value]="c.id">{{c.name}}</option>

@@ -4,6 +4,7 @@ import { apiUrl } from '../../services/api';
 import { ToastService } from '../../services/toast-service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { WAREHOUSE_UUID } from '../../app.config';
 
 interface Product {
   uuid: string;
@@ -62,6 +63,8 @@ export class Search implements OnInit {
   buildQueryParams(): string {
     const params = [];
     Object.entries(this.filter).forEach(([key, value]) => {
+      // Nie wysyłaj pustych wartości dla kontrahenta i miejsca
+      if ((key === 'contractor' || key === 'spot') && (!value || value === '')) return;
       if (value && value !== '') params.push(`${key}=${encodeURIComponent(value)}`);
     });
     params.push(`page=${this.currentPage}`);
@@ -113,8 +116,20 @@ export class Search implements OnInit {
   }
 
   loadPlaces() {
-    this.http.get<any[]>(apiUrl('/warehouseManagement/warehouses/cfb67e8f-6ccd-4016-b355-6cf02ce511ac'), { withCredentials: true }).subscribe({
-      next: (data) => { this.places = data.filter(p => p._free); },
+    interface Place {
+      id: number;
+      spot_name: string;
+      hall_name: string;
+      shelf_name: string;
+      _free: boolean;
+    }
+
+    interface WarehouseResponse {
+      locations?: Place[];
+    }
+
+    this.http.get<WarehouseResponse>(apiUrl(`/warehouseManagement/warehouses/${WAREHOUSE_UUID}`), { withCredentials: true }).subscribe({
+      next: (data: WarehouseResponse) => { this.places = data.locations || []; },
       error: () => { this.toast.show('error', 'Błąd', 'Nie udało się pobrać miejsc'); }
     });
   }
@@ -233,5 +248,9 @@ export class Search implements OnInit {
 
   getFreePlaces(): { id: number, spot_name: string, hall_name: string, shelf_name: string, _free: boolean }[] {
     return this.places.filter(p => p._free);
+  }
+
+  getOccupiedPlaces(): { id: number, spot_name: string, hall_name: string, shelf_name: string, _free: boolean }[] {
+    return this.places.filter(p => !p._free);
   }
 }
