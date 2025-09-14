@@ -10,7 +10,27 @@ interface Place {
   shelf: number;
   hall: number;
   warehouse: number;
+  spot_uuid: string;
+  spot_name: string;
+  shelf_uuid: string;
+  shelf_name: string;
+  hall_uuid: string;
+  hall_name: string;
+  warehouse_uuid: string;
+  warehouse_name: string;
+  _free: boolean;
 }
+
+type ShelfInfo = {
+  shelf_name: string;
+  shelf_uuid: string;
+};
+
+type HallInfo = {
+  hall_name: string;
+  hall_uuid: string;
+  shelves: ShelfInfo[];
+};
 
 interface Category {
   id: number;
@@ -53,6 +73,8 @@ export class Management {
   newShelf = { hall: '', shelf: '' };
   newPlace = { hall: '', shelf: '' };
 
+  hallsInfo: HallInfo[] = [];
+
   constructor(private http: HttpClient) {}
 
   setTab(tab: 'addItem' | 'halls' | 'categories') {
@@ -87,17 +109,27 @@ export class Management {
       { withCredentials: true }
     ).subscribe({
       next: (data) => {
-        // locations zawiera pełne obiekty z nazwami
         const locations = data.locations;
-        this.places = locations.map((loc: any) => ({
-          id: loc.id,
-          shelf: loc.shelf,
-          hall: loc.hall,
-          warehouse: loc.warehouse,
-          spot_name: loc.spot_name,
-          shelf_name: loc.shelf_name,
-          hall_name: loc.hall_name
-        }));
+        this.places = locations.map((loc: any) => ({ ...loc }));
+
+        // Grupowanie hal z regałami (z UUID)
+        const hallsMap: { [hall_uuid: string]: HallInfo } = {};
+        for (const loc of locations) {
+          if (!hallsMap[loc.hall_uuid]) {
+            hallsMap[loc.hall_uuid] = {
+              hall_name: loc.hall_name,
+              hall_uuid: loc.hall_uuid,
+              shelves: []
+            };
+          }
+          if (!hallsMap[loc.hall_uuid].shelves.some(s => s.shelf_uuid === loc.shelf_uuid)) {
+            hallsMap[loc.hall_uuid].shelves.push({
+              shelf_name: loc.shelf_name,
+              shelf_uuid: loc.shelf_uuid
+            });
+          }
+        }
+        this.hallsInfo = Object.values(hallsMap);
 
         // Grupa hal po nazwie
         this.halls = Array.from(new Set(locations.map((loc: any) => loc.hall_name)));
@@ -197,11 +229,54 @@ export class Management {
   });
   }
 
-  addShelf() {
-
+  addShelf(hall_uuid: string, shelfNumber: number) {
+    const shelfName = `Regał ${shelfNumber}`;
+    this.http.post(
+      apiUrl(`/warehouseManagement/halls/${hall_uuid}/shelves`),
+      { name: shelfName },
+      { withCredentials: true }
+    ).subscribe({
+      next: (response: any) => {
+        // Po utworzeniu regału, automatycznie dodaj miejsce "Miejsce 1"
+        if (response?.uuid) {
+          this.http.post(
+            apiUrl(`/warehouseManagement/shelves/${response.uuid}/spots`),
+            { name: 'Miejsce 1' },
+            { withCredentials: true }
+          ).subscribe({
+            next: () => this.loadPlaces(),
+            error: (err) => {
+              const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
+              console.error('Błąd dodawania miejsca:', err);
+            }
+          });
+        } else {
+          this.loadPlaces();
+        }
+      },
+      error: (err) => {
+        const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
+        console.error('Błąd dodawania regału:', err);
+      }
+    });
   }
 
-  addPlace() {
+  addPlace(shelf_uuid: string, placeNumber: number) {
+    const spotName = `Miejsce ${placeNumber}`;
+    this.http.post(
+      apiUrl(`/warehouseManagement/shelves/${shelf_uuid}/spots`),
+      { name: spotName },
+      { withCredentials: true }
+    ).subscribe({
+      next: () => this.loadPlaces(),
+      error: (err) => {
+        const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
+        console.error('Błąd dodawania miejsca:', err);
+      }
+    });
+  }
 
+  getPlacesForShelf(shelf_uuid: string): Place[] {
+    return this.places.filter(p => p.shelf_uuid === shelf_uuid);
   }
 }
