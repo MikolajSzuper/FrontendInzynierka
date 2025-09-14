@@ -204,52 +204,72 @@ export class Management {
 
   addHall() {
     const hallNumbers = this.halls
-    .map(hall => {
-      const hallName = String(hall);
-      const match = hallName.match(/hala (\d+)/i);
-      return match ? parseInt(match[1], 10) : 0;
-    })
-    .filter(n => n > 0);
-  const nextNumber = hallNumbers.length > 0 ? Math.max(...hallNumbers) + 1 : 1;
-  const newHallName = `hala ${nextNumber}`;
+      .map(hall => {
+        const hallName = String(hall);
+        const match = hallName.match(/Hala (\d+)/i);
+        return match ? parseInt(match[1], 10) : 0;
+      })
+      .filter(n => n > 0);
+    const nextNumber = hallNumbers.length > 0 ? Math.max(...hallNumbers) + 1 : 1;
+    const newHallName = `Hala ${nextNumber}`;
 
-  this.http.post(
-    apiUrl(`/warehouseManagement/warehouses/${WAREHOUSE_UUID}/halls`),
-    { name: newHallName },
-    { withCredentials: true }
-  ).subscribe({
-    next: () => {
-      this.loadPlaces();
-    },
-    error: (err) => {
-      const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
-      console.error('Błąd dodawania hali:', err);
-      // this.toast?.show('error', 'Błąd', msg);
-    }
-  });
+    this.http.post(
+      apiUrl(`/warehouseManagement/warehouses/${WAREHOUSE_UUID}/halls`),
+      { name: newHallName },
+      { withCredentials: true }
+    ).subscribe({
+      next: (response: any) => {
+        // Wyciągnij nazwę hali z odpowiedzi serwera
+        let hallName = newHallName;
+        if (response?.message) {
+          const match = response.message.match(/Utworzono hale (Hala \d+)/i);
+          if (match) {
+            hallName = match[1];
+          }
+        }
+        if (response?.uuid) {
+          this.addShelf(response.uuid, hallName);
+        } else {
+          this.loadPlaces();
+        }
+      },
+      error: (err) => {
+        const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
+        console.error('Błąd dodawania hali:', err);
+      }
+    });
   }
 
-  addShelf(hall_uuid: string, shelfNumber: number) {
-    const shelfName = `Regał ${shelfNumber}`;
+  addShelf(hall_uuid: string, hall_name?: string) {
+    // Jeśli przekazano nazwę hali, użyj jej, w przeciwnym razie pobierz z hallsInfo
+    let hallNumber = '1';
+    if (hall_name) {
+      const hallMatch = hall_name.match(/(\d+)/);
+      hallNumber = hallMatch ? hallMatch[1] : '1';
+    } else {
+      const hall = this.hallsInfo.find(h => h.hall_uuid === hall_uuid);
+      if (hall) {
+        const hallMatch = hall.hall_name.match(/(\d+)/);
+        hallNumber = hallMatch ? hallMatch[1] : '1';
+      }
+    }
+
+    // Pobierz liczbę regałów w tej hali
+    const hall = this.hallsInfo.find(h => h.hall_uuid === hall_uuid);
+    const shelfNumber = hall ? hall.shelves.length + 1 : 1;
+
+    // Nazwa regału w formacie "Regał X.Y"
+    const shelfName = `Regał ${hallNumber}.${shelfNumber}`;
+
     this.http.post(
       apiUrl(`/warehouseManagement/halls/${hall_uuid}/shelves`),
       { name: shelfName },
       { withCredentials: true }
     ).subscribe({
       next: (response: any) => {
-        // Po utworzeniu regału, automatycznie dodaj miejsce "Miejsce 1"
         if (response?.uuid) {
-          this.http.post(
-            apiUrl(`/warehouseManagement/shelves/${response.uuid}/spots`),
-            { name: 'Miejsce 1' },
-            { withCredentials: true }
-          ).subscribe({
-            next: () => this.loadPlaces(),
-            error: (err) => {
-              const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
-              console.error('Błąd dodawania miejsca:', err);
-            }
-          });
+          // Dodaj miejsce "Miejsce 1"
+          this.addPlace(response.uuid, 1);
         } else {
           this.loadPlaces();
         }

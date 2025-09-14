@@ -2,6 +2,9 @@
     <h1 class="text-2xl font-bold text-gray-800 mb-6">Spis hal</h1>
   <!-- Wybór hali -->
   <div class="flex gap-4 mb-8">
+    @if (halls.length === 0) {
+      <span class="text-gray-500 text-lg font-semibold">Brak hal</span>
+    }
     @for (hall of halls; track hall.id) {
       <button
         class="px-6 py-2 rounded-lg font-bold shadow transition cursor-pointer"
@@ -20,7 +23,9 @@
     <div class="flex-1 w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
       @for (rack of selectedHall.racks; track rack.id) {
         <div class="bg-gray-100 rounded-lg p-6 shadow flex flex-col items-center h-full">
-          <h2 class="font-semibold text-lg text-gray-700 mb-2">{{ rack.name }}</h2>
+          <h2 class="font-semibold text-lg text-gray-700 mb-2">
+            Regał {{ rack.name.split('.')[1] || rack.name }}
+          </h2>
           <div class="w-full flex flex-col items-center mb-4">
             <span class="text-sm text-gray-500">Zajęte miejsca</span>
             <span class="text-xl font-bold text-orange-600">{{ rack.occupied }} / {{ rack.total }}</span>
