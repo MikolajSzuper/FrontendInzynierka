@@ -187,7 +187,8 @@ export class Users implements OnInit {
       userType: this.newUser.userType,
       password: this.newUser.password
     };
-    this.http.post(apiUrl('/auth/users'), payload).subscribe({
+    console.log('Dodawanie użytkownika z danymi:', payload);
+    this.http.post(apiUrl('/auth/users'), payload, { withCredentials: true }).subscribe({
       next: () => {
         this.showAddUserForm = false;
         this.loadUsers();

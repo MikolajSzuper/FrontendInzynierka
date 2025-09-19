@@ -6,6 +6,7 @@ import { ToastService } from '../../services/toast-service';
 import { apiUrl } from '../../services/api';
 
 interface Contractor {
+  uuid: string;
   id: number;
   name: string;
   phone: string;
@@ -27,7 +28,7 @@ export class Contractors implements OnInit {
 
   showAddForm: boolean = false;
 
-  editId: number | null = null;
+  editUuid: string | null = null;
   editData: Partial<Contractor> = {};
 
   constructor(private http: HttpClient, private toast: ToastService) {}
@@ -38,7 +39,7 @@ export class Contractors implements OnInit {
 
   setTab(tab: 'list' | 'add') {
     this.activeTab = tab;
-    this.editId = null;
+    this.editUuid = null;
     this.editData = {};
     this.newContractor = { name: '', phone: '', email: '' };
     if (tab === 'list') {
@@ -76,25 +77,25 @@ export class Contractors implements OnInit {
   }
 
   startEdit(contractor: Contractor) {
-    this.editId = contractor.id;
+    this.editUuid = contractor.uuid;
     this.editData = { ...contractor };
   }
 
   cancelEdit() {
-    this.editId = null;
+    this.editUuid = null;
     this.editData = {};
   }
 
   saveEdit() {
-    if (!this.editId) return;
+    if (!this.editUuid) return;
     const payload = {
       name: this.editData.name,
       phone: this.editData.phone,
       email: this.editData.email
     };
-    this.http.put(apiUrl(`/contractors/${this.editId}`), payload, { withCredentials: true }).subscribe({
+    this.http.put(apiUrl(`/contractors/${this.editUuid}`), payload, { withCredentials: true }).subscribe({
       next: () => {
-        this.editId = null;
+        this.editUuid = null;
         this.editData = {};
         this.loadContractors();
         this.toast.show('success', 'Sukces', 'Kontrahent został zaktualizowany.');
@@ -107,9 +108,9 @@ export class Contractors implements OnInit {
     });
   }
 
-  deleteContractor(id: number) {
+  deleteContractor(uuid: string) {
     if (!confirm('Czy na pewno chcesz usunąć tego kontrahenta?')) return;
-    this.http.delete(apiUrl(`/contractors/${id}`), { withCredentials: true }).subscribe({
+    this.http.delete(apiUrl(`/contractors/${uuid}`), { withCredentials: true }).subscribe({
       next: () => {
         this.loadContractors();
         this.toast.show('success', 'Sukces', 'Kontrahent został usunięty.');
