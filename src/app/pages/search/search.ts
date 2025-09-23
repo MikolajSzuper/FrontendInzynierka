@@ -11,7 +11,27 @@ interface Product {
   rfid: string;
   name: string;
   category: { id: number; name: string };
-  spot: { id: number; name: string };
+  spot: {
+    id: number;
+    uuid: string;
+    name: string;
+    shelf: {
+      id: number;
+      uuid: string;
+      name: string;
+      hall: {
+        id: number;
+        uuid: string;
+        name: string;
+        warehouse: {
+          id: number;
+          uuid: string;
+          name: string;
+        }
+      }
+    };
+    _free: boolean;
+  };
   contractor: string;
   updated_at: string;
   weight?: number;
@@ -31,8 +51,9 @@ export class Search implements OnInit {
   products: Product[] = [];
   totalPages = 0;
   currentPage = 0;
-  pageSize = 10;
+  pageSize = 3;
   archived = false;
+  isAdminOrSupervisor = ['ADMIN', 'SUPERVISOR'].includes(localStorage.getItem('user_type') || '');
 
   // Filtry
   filter = {
@@ -180,7 +201,7 @@ export class Search implements OnInit {
           weight: details.weight ?? null,
           height: details.height ?? null,
           width: details.width ?? null,
-          contractor: contractorId ?? '', // zawsze id
+          contractor: contractorId ?? '',
           spot: product.spot.id
         };
       },
@@ -264,5 +285,15 @@ export class Search implements OnInit {
 
   getOccupiedPlaces(): { id: number, spot_name: string, hall_name: string, shelf_name: string, _free: boolean }[] {
     return this.places.filter(p => !p._free);
+  }
+
+  getEditPlaces(product: Product) {
+    // Zwraca listę wolnych miejsc + aktualne miejsce produktu (jeśli nie jest wolne)
+    const freePlaces = this.getFreePlaces();
+    const currentPlace = this.places.find(p => p.id === product.spot.id);
+    if (currentPlace && !currentPlace._free && !freePlaces.some(p => p.id === currentPlace.id)) {
+      return [currentPlace, ...freePlaces];
+    }
+    return freePlaces;
   }
 }
