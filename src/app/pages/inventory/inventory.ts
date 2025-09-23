@@ -38,6 +38,8 @@ export class Inventory implements OnInit {
   shelves: string[] = [];
   inventory: { [shelf: string]: InventoryProduct[] } = {};
   loading = false;
+  generalNote: string = '';
+  showNoteInput: boolean = false;
 
   constructor(private http: HttpClient, private toast: ToastService) {}
 
@@ -68,6 +70,7 @@ export class Inventory implements OnInit {
       next: (data) => {
         this.inventory = data.inventory;
         this.shelves = Object.keys(this.inventory);
+        this.generalNote = data.note || '';
         this.loading = false;
       },
       error: () => { 
@@ -84,7 +87,7 @@ export class Inventory implements OnInit {
   saveInventory() {
     if (!this.selectedHallUuid) return;
     const endpoint = apiUrl(`/products/inventories/${this.selectedHallUuid}`);
-    const payload = { inventory: this.inventory };
+    const payload = { inventory: this.inventory, note: this.generalNote };
     this.http.post(endpoint, payload, { withCredentials: true, responseType: 'blob' }).subscribe({
       next: (blob: Blob) => {
         // Pobierz plik xlsx
