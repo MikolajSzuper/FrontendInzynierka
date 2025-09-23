@@ -32,6 +32,7 @@ export class Search implements OnInit {
   totalPages = 0;
   currentPage = 0;
   pageSize = 10;
+  archived = false;
 
   // Filtry
   filter = {
@@ -67,6 +68,13 @@ export class Search implements OnInit {
       if ((key === 'contractor' || key === 'spot') && (!value || value === '')) return;
       if (value && value !== '') params.push(`${key}=${encodeURIComponent(value)}`);
     });
+    if (this.archived) {
+      params.push('is_active=false');
+      params.push('issued=true');
+    } else {
+      params.push('is_active=true');
+      params.push('issued=false');
+    }
     params.push(`page=${this.currentPage}`);
     params.push(`size=${this.pageSize}`);
     return params.length ? '?' + params.join('&') : '';
@@ -160,6 +168,10 @@ export class Search implements OnInit {
     this.editProductUuid = product.uuid;
     this.http.get<any>(apiUrl(`/products/${product.uuid}`), { withCredentials: true }).subscribe({
       next: (details) => {
+        let contractorId = this.contractors.find(c => c.name === product.contractor)?.id;
+        if (!contractorId && typeof product.contractor === 'number') {
+          contractorId = product.contractor;
+        }
         this.editProductData = {
           rfid: product.rfid,
           name: product.name,
@@ -168,7 +180,7 @@ export class Search implements OnInit {
           weight: details.weight ?? null,
           height: details.height ?? null,
           width: details.width ?? null,
-          contractor: product.contractor, // jeśli to id, jeśli nie: znajdź id po nazwie
+          contractor: contractorId ?? '', // zawsze id
           spot: product.spot.id
         };
       },

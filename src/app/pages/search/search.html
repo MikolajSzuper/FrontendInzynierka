@@ -18,8 +18,15 @@
         <option [value]="place.id">{{place.spot_name}} ({{place.hall_name}}/{{place.shelf_name}})</option>
       }
     </select>
-    <input [(ngModel)]="filter.contractor" name="contractor" placeholder="Kontrahent" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400 font-semibold" (ngModelChange)="onFilterChange()" />
+    <select [(ngModel)]="filter.contractor" name="filterContractor" class="bg-gray-100 rounded-lg px-4 py-2 font-semibold" (ngModelChange)="onFilterChange()">
+      <option value="">Wybierz kontrahenta...</option>
+      @for (c of contractors; track c.id) {
+        <option [value]="c.id">{{c.name}}</option>
+      }
+    </select>
     <input type="date" [(ngModel)]="filter.updated_at" name="updated_at" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400 font-semibold" (ngModelChange)="onFilterChange()" />
+    <div class="mt-2 text-center"><input type="checkbox" [(ngModel)]="archived" name="archived" (change)="onFilterChange()" class="mr-2 align-middle" id="archived-checkbox" />
+    <label for="archived-checkbox" class="font-semibold text-gray-700 align-middle">Archiwalne</label></div>
   </form>
 
   <!-- Tabela wyników -->
