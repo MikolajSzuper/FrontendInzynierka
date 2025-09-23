@@ -14,15 +14,25 @@ import { ToastService } from '../../services/toast-service';
 export class Help {
   content = '';
   sending = false;
+  username = '';
+  email = '';
 
   constructor(private http: HttpClient, private toast: ToastService) {}
 
   sendReport() {
-    if (!this.content.trim()) return;
+    if (!this.username.trim() || !this.email.trim() || !this.content.trim()) return;
     this.sending = true;
-    this.http.post(apiUrl('/auth/reports'), { content: this.content.trim(), type: 'NORMAL' }, { withCredentials: true }).subscribe({
+    const payload = {
+      username: this.username.trim(),
+      email: this.email.trim(),
+      content: this.content.trim(),
+      type: 'NORMAL'
+    };
+    this.http.post(apiUrl('/auth/reports'), payload, { withCredentials: true }).subscribe({
       next: () => {
         this.content = '';
+        this.username = '';
+        this.email = '';
         this.sending = false;
         this.toast.show('success', 'Sukces', 'Zgłoszenie zostało wysłane!');
       },
