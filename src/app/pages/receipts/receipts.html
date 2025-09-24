@@ -70,9 +70,9 @@
 
   <!-- Zakładka lista przyjęć -->
   @if (tab === 'list') {
-    <div *ngIf="loadingReceipts" class="text-gray-500 text-center py-8">Ładowanie listy przyjęć...</div>
-    <div *ngIf="!loadingReceipts && receiptsList.length === 0" class="text-gray-500 text-center py-8">Brak przyjęć</div>
-    <div *ngIf="!loadingReceipts && receiptsList.length > 0">
+    @if (loadingReceipts){
+      <div class="text-gray-500 text-center py-8">Ładowanie listy przyjęć...</div>
+    }@else if (!loadingReceipts && receiptsList.length > 0){
       <table class="w-full text-center border-separate border-spacing-y-1 text-sm mb-6">
         <thead>
           <tr class="text-gray-600">
@@ -216,6 +216,8 @@
           }
         </tbody>
       </table>
-    </div>
+    }@else{
+      <div class="text-gray-500 text-center py-8">Brak przyjęć</div>
+    }
   }
 </div>
