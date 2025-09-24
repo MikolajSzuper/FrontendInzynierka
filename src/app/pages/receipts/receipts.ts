@@ -32,10 +32,24 @@ interface Contractor {
   styleUrl: './receipts.css'
 })
 export class Receipts implements OnInit {
+  tab: 'add' | 'list' = 'add';
+
   products: Product[] = [];
   contractors: Contractor[] = [];
   selectedProducts: Set<string> = new Set();
   selectedContractor: number | '' = '';
+
+  receiptsList: any[] = [];
+  selectedReceipt: any = null;
+  loadingReceipts = false;
+  loadingReceiptDetails = false;
+
+  editReceiptUuid: string | null = null;
+  editReceiptData: any = {};
+
+  productsToAdd: { [uuid: string]: boolean } = {};
+
+  isSupervisor = localStorage.getItem('user_type') === 'SUPERVISOR';
 
   constructor(private http: HttpClient, private toast: ToastService) {}
 
@@ -125,6 +139,170 @@ export class Receipts implements OnInit {
         }
         this.toast.show('error', 'Błąd', 'Nie udało się dodać przyjęcia');
         console.error('Błąd dodawania produktu:', err);
+      }
+    });
+  }
+
+  setTab(tab: 'add' | 'list') {
+    this.tab = tab;
+    if (tab === 'list') {
+      this.fetchReceiptsList();
+    }
+    if (tab === 'add') {
+      this.selectedReceipt = null;
+    }
+  }
+
+  fetchReceiptsList() {
+    this.loadingReceipts = true;
+    this.http.get<any[]>(apiUrl('/productService/receipts'), { withCredentials: true }).subscribe({
+      next: (data) => {
+        this.receiptsList = data ?? [];
+        this.loadingReceipts = false;
+      },
+      error: () => {
+        this.receiptsList = [];
+        this.loadingReceipts = false;
+        this.toast.show('error', 'Błąd', 'Nie udało się pobrać listy przyjęć');
+      }
+    });
+  }
+
+  showReceiptDetails(uuid: string) {
+    this.loadingReceiptDetails = true;
+    this.selectedReceipt = null;
+    this.http.get<any>(apiUrl(`/productService/receipts/${uuid}`), { withCredentials: true }).subscribe({
+      next: (data) => {
+        this.selectedReceipt = data;
+        this.loadingReceiptDetails = false;
+      },
+      error: () => {
+        this.selectedReceipt = null;
+        this.loadingReceiptDetails = false;
+        this.toast.show('error', 'Błąd', 'Nie udało się pobrać szczegółów przyjęcia');
+      }
+    });
+  }
+
+  closeReceiptDetails() {
+    this.selectedReceipt = null;
+  }
+
+  removedProducts: Set<string> = new Set();
+
+  get availableProductsForEdit() {
+    // Produkty, które nie są w przyjęciu lub zostały usunięte z przyjęcia
+    const usedUuids = new Set([
+      ...(this.selectedReceipt?.products?.map((p: any) => p.uuid) ?? []),
+      ...Array.from(this.removedProducts)
+    ]);
+    return this.products.filter(p => !usedUuids.has(p.uuid));
+  }
+
+  startEditReceipt(receipt: any) {
+    this.editReceiptUuid = receipt.uuid;
+    // Zamień kontrahenta na id jeśli to string
+    let contractorId = this.contractors.find(c => c.name === receipt.contractor)?.id;
+    if (!contractorId && typeof receipt.contractor === 'number') {
+      contractorId = receipt.contractor;
+    }
+    this.editReceiptData = {
+      contractor: contractorId ?? '',
+      products: receipt.products.map((p: any) => p.uuid)
+    };
+    this.removedProducts = new Set();
+    this.productsToAdd = {};
+  }
+
+  removeProductFromEdit(uuid: string) {
+    if (this.removedProducts.has(uuid)) {
+      this.removedProducts.delete(uuid);
+    } else {
+      this.removedProducts.add(uuid);
+    }
+  }
+
+  cancelEditReceipt() {
+    this.editReceiptUuid = null;
+    this.editReceiptData = {};
+    this.removedProducts = new Set();
+    this.productsToAdd = {};
+  }
+
+  saveEditReceipt() {
+    if (!this.editReceiptUuid) return;
+    const original = this.selectedReceipt.products.map((p: any) => p.uuid);
+    const kept: string[] = original.filter((uuid: string) => !this.removedProducts.has(uuid));
+    const added = Object.entries(this.productsToAdd)
+      .filter(([uuid, checked]) => checked)
+      .map(([uuid]) => uuid);
+    const payload = {
+      contractor: String(this.editReceiptData.contractor),
+      products: [...kept, ...added]
+    };
+    this.http.put(apiUrl(`/productService/receipts/${this.editReceiptUuid}`), payload, {
+      withCredentials: true,
+      responseType: 'blob'
+    }).subscribe({
+      next: (blob: Blob) => {
+        const filename = 'przyjecie.docx';
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+
+        this.editReceiptUuid = null;
+        this.editReceiptData = {};
+        this.removedProducts = new Set();
+        this.productsToAdd = {};
+        this.showReceiptDetails(this.selectedReceipt.uuid);
+        this.fetchReceiptsList();
+        this.loadProducts();
+        this.toast.show('success', 'Sukces', 'Przyjęcie zostało zaktualizowane, plik został pobrany.');
+      },
+      error: (err) => {
+        // Obsługa przypadku, gdy serwer zwraca plik jako błąd (status 200)
+        if (err.status === 200 && err.error instanceof Blob) {
+          const filename = 'przyjecie.docx';
+          const url = window.URL.createObjectURL(err.error);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          a.click();
+          window.URL.revokeObjectURL(url);
+
+          this.editReceiptUuid = null;
+          this.editReceiptData = {};
+          this.removedProducts = new Set();
+          this.productsToAdd = {};
+          this.showReceiptDetails(this.selectedReceipt.uuid);
+          this.fetchReceiptsList();
+          this.loadProducts();
+          this.toast.show('success', 'Sukces', 'Przyjęcie zostało zaktualizowane, plik został pobrany.');
+          return;
+        }
+        const msg = err?.error?.message || 'Wystąpił błąd';
+        this.toast.show('error', 'Błąd', msg);
+        console.error('Błąd podczas edycji przyjęcia:', err);
+      }
+    });
+  }
+
+  deleteReceipt(uuid: string) {
+    if (!confirm('Czy na pewno chcesz usunąć to przyjęcie?')) return;
+    this.http.delete(apiUrl(`/productService/receipts/${uuid}`), { withCredentials: true }).subscribe({
+      next: () => {
+        this.selectedReceipt = null;
+        this.fetchReceiptsList();
+        this.loadProducts();
+        this.toast.show('success', 'Sukces', 'Przyjęcie zostało usunięte.');
+      },
+      error: (err) => {
+        const msg = err?.error?.message || 'Wystąpił błąd';
+        this.toast.show('error', 'Błąd', msg);
+        console.error('Błąd podczas usuwania przyjęcia:', err);
       }
     });
   }
