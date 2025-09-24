@@ -41,7 +41,7 @@
                 <div class="flex flex-wrap items-center gap-x-8 gap-y-2">
                   <span class="text-xl font-bold text-orange-700">
                     @if (editProductUuid === product.uuid) {
-                      <input [(ngModel)]="editProductData.name" name="editName{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 font-bold" />
+                      <input [(ngModel)]="editProductData.name" name="editName{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 font-bold border" />
                     } @else {
                       {{product.name}}
                     }
@@ -50,7 +50,7 @@
                   <span class="text-gray-600 text-sm font-mono">
                     RFID:
                     @if (editProductUuid === product.uuid) {
-                      <input [(ngModel)]="editProductData.rfid" name="editRfid{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 font-mono w-34" />
+                      <input [(ngModel)]="editProductData.rfid" name="editRfid{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 font-mono w-34 border" />
                     } @else {
                       {{product.rfid}}
                     }
@@ -60,7 +60,7 @@
                   <span class="text-gray-600 text-sm font-semibold">
                     Kategoria:
                     @if (editProductUuid === product.uuid) {
-                      <select [(ngModel)]="editProductData.category" name="editCategory{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1">
+                      <select [(ngModel)]="editProductData.category" name="editCategory{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 border">
                         @for (cat of categories; track cat.id) {
                           <option [value]="cat.id">{{cat.name}}</option>
                         }
@@ -72,7 +72,7 @@
                   <span class="text-gray-600 text-sm font-semibold">
                     Kontrahent:
                     @if (editProductUuid === product.uuid) {
-                      <select [(ngModel)]="editProductData.contractor" name="editContractor{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1">
+                      <select [(ngModel)]="editProductData.contractor" name="editContractor{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 border">
                         @for (c of contractors; track c.id) {
                           <option [value]="c.id">{{c.name}}</option>
                         }
@@ -85,8 +85,8 @@
                 <div class="flex flex-wrap items-center gap-x-8 gap-y-2">
                   <span class="text-gray-600 text-sm font-semibold">
                     Lokalizacja:
-                    @if (editProductUuid === product.uuid) {
-                      <select [(ngModel)]="editProductData.spot" name="editSpot{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1">
+                    @if (moveProductUuid === product.uuid) {
+                      <select [(ngModel)]="moveProductData.spot" name="moveSpot{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 border">
                         @for (place of getEditPlaces(product); track place.id) {
                           <option [value]="place.id">{{place.spot_name}} ({{place.hall_name}}/{{place.shelf_name}})</option>
                         }
@@ -104,7 +104,7 @@
                   <span class="text-gray-600 text-sm font-semibold">
                     Waga:
                     @if (editProductUuid === product.uuid) {
-                      <input type="number" [(ngModel)]="editProductData.weight" name="editWeight{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 w-16" />
+                      <input type="number" [(ngModel)]="editProductData.weight" name="editWeight{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 w-16 border" />
                     } @else {
                       <span class="font-normal">{{product.weight}}</span>
                     }
@@ -112,7 +112,7 @@
                   <span class="text-gray-600 text-sm font-semibold">
                     Wysokość:
                     @if (editProductUuid === product.uuid) {
-                      <input type="number" [(ngModel)]="editProductData.height" name="editHeight{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 w-16" />
+                      <input type="number" [(ngModel)]="editProductData.height" name="editHeight{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 w-16 border" />
                     } @else {
                       <span class="font-normal">{{product.height}}</span>
                     }
@@ -120,7 +120,7 @@
                   <span class="text-gray-600 text-sm font-semibold">
                     Szerokość:
                     @if (editProductUuid === product.uuid) {
-                      <input type="number" [(ngModel)]="editProductData.width" name="editWidth{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 w-16" />
+                      <input type="number" [(ngModel)]="editProductData.width" name="editWidth{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 w-16 border" />
                     } @else {
                       <span class="font-normal">{{product.width}}</span>
                     }
@@ -133,11 +133,21 @@
                     @if (editProductUuid === product.uuid) {
                       <button type="button" (click)="saveEditProduct()" class="w-full bg-orange-600 text-white font-semibold px-4 py-1 rounded-lg shadow hover:bg-orange-700 transition cursor-pointer col-span-2">Zapisz</button>
                       <button type="button" (click)="cancelEditProduct()" class="w-full bg-gray-200 text-gray-700 px-4 py-1 rounded cursor-pointer hover:bg-orange-100 hover:text-orange-700">Anuluj</button>
+                    } @else if (moveProductUuid === product.uuid) {
+                      <button type="button" (click)="transferProduct()" class="w-full bg-orange-600 text-white font-semibold px-4 py-1 rounded-lg shadow hover:bg-orange-700 transition cursor-pointer col-span-2">Przenieś</button>
+                      <button type="button" (click)="cancelMoveProduct()" class="w-full bg-gray-200 text-gray-700 px-4 py-1 rounded cursor-pointer hover:bg-orange-100 hover:text-orange-700">Anuluj</button>
                     } @else {
                       <button class="p-2 text-blue-600 hover:bg-blue-100 rounded cursor-pointer" (click)="startEditProduct(product)">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                           <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                           <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                      </button>
+                      <button class="p-2 text-green-600 hover:bg-green-100 rounded cursor-pointer" (click)="startMoveProduct(product)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="23 7 23 1 17 1"></polyline>
+                          <line x1="16" y1="8" x2="23" y2="1"></line>
+                          <rect x="1" y="15" width="22" height="8" rx="2" ry="2"></rect>
                         </svg>
                       </button>
                       @if (isAdminOrSupervisor) {

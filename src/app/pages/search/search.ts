@@ -53,6 +53,8 @@ export class Search implements OnInit {
   currentPage = 0;
   pageSize = 3;
   archived = false;
+  moveProductUuid: string | null = null;
+  moveProductData: any = {};
   isAdminOrSupervisor = ['ADMIN', 'SUPERVISOR'].includes(localStorage.getItem('user_type') || '');
 
   // Filtry
@@ -105,6 +107,12 @@ export class Search implements OnInit {
     const url = apiUrl('/products' + this.buildQueryParams());
     this.http.get<any>(url, { withCredentials: true }).subscribe({
       next: async (data) => {
+        if (data && typeof data === 'object' && 'message' in data && !('content' in data)) {
+          this.products = [];
+          this.totalPages = 0;
+          this.currentPage = 0;
+          return;
+        }
         // Pobierz szczegóły dla każdego produktu równolegle
         const productsWithDetails = await Promise.all(
           data.content.map(async (product: Product) => {
@@ -216,6 +224,41 @@ export class Search implements OnInit {
     this.editProductData = {};
   }
 
+  startMoveProduct(product: Product) {
+    this.moveProductUuid = product.uuid;
+    this.moveProductData = { spot: product.spot.id };
+  }
+
+  cancelMoveProduct() {
+    this.moveProductUuid = null;
+    this.moveProductData = {};
+  }
+
+  transferProduct() {
+    if (!this.moveProductUuid) return;
+    const originalProduct = this.products.find(p => p.uuid === this.moveProductUuid);
+    if (!originalProduct || Number(this.moveProductData.spot) === originalProduct.spot.id) {
+      this.cancelMoveProduct();
+      return;
+    }
+    this.http.post(apiUrl('/products/transfer'), {
+      rfid: originalProduct.rfid,
+      spot: Number(this.moveProductData.spot)
+    }, { withCredentials: true }).subscribe({
+      next: () => {
+        this.toast.show('success', 'Sukces', 'Produkt został pomyślnie przeniesiony.');
+        this.moveProductUuid = null;
+        this.moveProductData = {};
+        this.loadProducts();
+      },
+      error: (err) => {
+        const msg = err?.error?.message || 'Wystąpił błąd';
+        this.toast.show('error', 'Błąd', msg);
+        console.error('Błąd podczas przenoszenia produktu:', err);
+      }
+    });
+  }
+
   saveEditProduct() {
     if (!this.editProductUuid) return;
     const payload = {
@@ -226,8 +269,7 @@ export class Search implements OnInit {
       weight: Number(this.editProductData.weight),
       height: Number(this.editProductData.height),
       width: Number(this.editProductData.width),
-      contractor: Number(this.editProductData.contractor),
-      spot: Number(this.editProductData.spot)
+      contractor: Number(this.editProductData.contractor)
     };
     this.http.put(apiUrl(`/products/${this.editProductUuid}`), payload, { withCredentials: true }).subscribe({
       next: () => {
