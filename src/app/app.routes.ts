@@ -15,6 +15,7 @@ import { AuthGuard } from './services/auth.guard';
 import { adminGuard } from './services/admin-guard';
 import { UserGuard } from './services/user-guard';
 import { SupervisorGuard } from './services/supervisor-guard';
+import { ProductHistory } from './pages/product-history/product-history';
 
 export const routes: Routes = [
   { path: '', component: Login },
@@ -71,6 +72,11 @@ export const routes: Routes = [
         path: 'contractors',
         component: Contractors,
         canActivate: [SupervisorGuard] 
+      },
+      {
+        path: 'product-history',
+        component: ProductHistory, // Dodaj import i komponent poniżej
+        canActivate: [SupervisorGuard]
       },
       
       // Ścieżki wspólne
