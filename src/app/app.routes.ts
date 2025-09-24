@@ -76,7 +76,7 @@ export const routes: Routes = [
       {
         path: 'product-history',
         component: ProductHistory, // Dodaj import i komponent poniżej
-        canActivate: [SupervisorGuard]
+        canActivate: [UserGuard]
       },
       
       // Ścieżki wspólne
