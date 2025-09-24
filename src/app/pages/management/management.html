@@ -110,17 +110,37 @@
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         @for (hall of hallsInfo; track hall.hall_uuid) {
           <div class="bg-gray-100 rounded-lg shadow p-4 flex flex-col gap-3">
+            <div class="flex items-center justify-between mb-2">
             <h3 class="font-semibold text-lg text-orange-700 mb-1 text-center">{{ hall.hall_name }}</h3>
+            <button class="p-1 text-red-600 hover:bg-red-100 rounded cursor-pointer" (click)="deleteHall(hall.hall_uuid)">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="8" y1="12" x2="16" y2="12"></line>
+                          </svg>
+            </button>
+            </div>
             <div class="flex flex-col gap-3">
               @for (shelf of hall.shelves; let shelfIdx = $index; track shelf.shelf_uuid) {
                 <div class="bg-white rounded shadow p-2 mb-1">
                   <div class="flex items-center justify-between mb-1">
                     <strong class="text-base text-gray-700">Regał {{ shelfIdx + 1 }}</strong>
+                    <button class="p-1 text-red-600 hover:bg-red-100 rounded cursor-pointer" (click)="deleteShelf(shelf.shelf_uuid)">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="8" y1="12" x2="16" y2="12"></line>
+                          </svg>
+                    </button>
                   </div>
                   <ul class="grid grid-cols-2 gap-1">
                     @for (place of getPlacesForShelf(shelf.shelf_uuid); let placeIdx = $index; track place.id) {
                       <li class="bg-gray-200 rounded px-1 py-0.5 text-center text-gray-700 shadow text-xs">
                         Miejsce {{ placeIdx + 1 }}
+                        <button class="p-1 text-red-600 hover:bg-red-100 rounded cursor-pointer" (click)="deletePlace(place.spot_uuid)">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="8" y1="12" x2="16" y2="12"></line>
+                          </svg>
+                        </button>
                       </li>
                     }
                   </ul>

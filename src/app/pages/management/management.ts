@@ -388,4 +388,49 @@ export class Management {
   getFreePlaces(): Place[] {
     return this.places.filter(p => p._free);
   }
+
+  deleteHall(hall_uuid: string) {
+    if (!confirm('Czy na pewno chcesz usunąć tę halę?')) return;
+    this.http.delete(apiUrl(`/warehouseManagement/halls/${hall_uuid}`), { withCredentials: true }).subscribe({
+      next: () => {
+        this.toast.show('success', 'Sukces', 'Hala została usunięta');
+        this.loadPlaces();
+      },
+      error: (err) => {
+        const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
+        this.toast.show('error', 'Błąd', msg);
+        console.error('Błąd podczas usuwania hali:', err);
+      }
+    });
+  }
+
+  deleteShelf(shelf_uuid: string) {
+    if (!confirm('Czy na pewno chcesz usunąć ten regał?')) return;
+    this.http.delete(apiUrl(`/warehouseManagement/shelves/${shelf_uuid}`), { withCredentials: true }).subscribe({
+      next: () => {
+        this.toast.show('success', 'Sukces', 'Regał został usunięty');
+        this.loadPlaces();
+      },
+      error: (err) => {
+        const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
+        this.toast.show('error', 'Błąd', msg);
+        console.error('Błąd podczas usuwania regału:', err);
+      }
+    });
+  }
+
+  deletePlace(spot_uuid: string) {
+    if (!confirm('Czy na pewno chcesz usunąć to miejsce?')) return;
+    this.http.delete(apiUrl(`/warehouseManagement/spots/${spot_uuid}`), { withCredentials: true }).subscribe({
+      next: () => {
+        this.toast.show('success', 'Sukces', 'Miejsce zostało usunięte');
+        this.loadPlaces();
+      },
+      error: (err) => {
+        const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
+        this.toast.show('error', 'Błąd', msg);
+        console.error('Błąd podczas usuwania miejsca:', err);
+      }
+    });
+  }
 }
