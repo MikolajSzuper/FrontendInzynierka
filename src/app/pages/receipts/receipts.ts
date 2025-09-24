@@ -47,7 +47,7 @@ export class Receipts implements OnInit {
   loadProducts() {
     this.http.get<any>(apiUrl('/products?is_active=false&issued=false'), { withCredentials: true }).subscribe({
       next: (data) => {
-        this.products = data.content;
+        this.products = data.content ?? [];
       },
       error: (err) => {
         if (err.status === 400) {
