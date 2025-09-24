@@ -19,9 +19,6 @@ export const AuthGuard: CanActivateFn = async (route, state) => {
     return true;
   } catch (err) {
     console.error('[AuthGuard] Auto-login nieudany:', err);
-    localStorage.removeItem('user_name');
-    localStorage.removeItem('user_type');
-    router.navigate(['/']);
     return false;
   }
 };
