@@ -9,14 +9,18 @@
       <app-profile />
     </div>
   </header>
-  <div class="flex flex-1">
+  <div class="flex flex-1 h-full overflow-hidden">
     <!-- Sidebar -->
-    <aside class="w-64 bg-gray-200 flex flex-col pt-6">
+    <aside class="w-64 bg-gray-200 pt-6">
       <app-sidebar />
     </aside>
     <!-- Main content -->
-    <main class="flex-1 h-full w-full p-8 bg-gray-300 overflow-auto flex flex-col">
+    <main class="flex-1 h-full w-full p-8 pb-12 bg-gray-300 overflow-auto flex flex-col">
       <router-outlet />
     </main>
   </div>
+  <!-- Footer -->
+  <footer class="fixed left-0 bottom-0 w-full bg-white py-1 text-center text-gray-500 text-xs shadow-inner z-30">
+    &copy; {{ currentYear }} Magazynex
+  </footer>
 </div>

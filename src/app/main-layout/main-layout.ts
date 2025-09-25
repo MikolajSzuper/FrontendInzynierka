@@ -9,4 +9,6 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css'
 })
-export class MainLayout {}
+export class MainLayout {
+  public currentYear: number = new Date().getFullYear();
+}
