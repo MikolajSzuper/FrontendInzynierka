@@ -132,20 +132,16 @@ export class Users implements OnInit {
 
   getPageNumbers(): number[] {
     if (this.totalPages <= 4) {
-      // Jeśli jest 4 lub mniej stron, pokaż wszystkie
       return Array.from({ length: this.totalPages }, (_, i) => i);
     }
 
     const pages: number[] = [];
-    const visiblePages = 2; // Liczba widocznych stron (bez pierwszej/ostatniej i wielokroka)
+    const visiblePages = 2; 
     
-    // Zawsze dodaj pierwszą stronę
     pages.push(0);
     
-    // Ustal środek "okna" paginacji
     let windowStart = this.currentPage - Math.floor(visiblePages / 2);
     
-    // Upewnij się, że okno nie wykracza poza granice
     if (windowStart < 1) {
       windowStart = 1;
     } else if (windowStart > this.totalPages - visiblePages - 1) {

@@ -16,7 +16,6 @@ export class Login {
   username = '';
   password = '';
 
-  // Dodaj stan modala i pola do odzyskiwania hasła
   showForgotModal = false;
   forgotUsername = '';
   forgotEmail = '';

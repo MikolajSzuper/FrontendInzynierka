@@ -56,7 +56,6 @@ export class Inventory implements OnInit {
         }
         this.halls = Array.from(hallsMap.entries()).map(([uuid, name]) => ({ uuid, name }));
         if (this.halls.length) {
-          // Pobierz inwentaryzację dla pierwszej hali
           this.selectHall(this.halls[0].uuid);
         }
       }
@@ -90,7 +89,6 @@ export class Inventory implements OnInit {
     const payload = { inventory: this.inventory, note: this.generalNote };
     this.http.post(endpoint, payload, { withCredentials: true, responseType: 'blob' }).subscribe({
       next: (blob: Blob) => {
-        // Pobierz plik xlsx
         const filename = 'inwentaryzacja.xlsx';
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');

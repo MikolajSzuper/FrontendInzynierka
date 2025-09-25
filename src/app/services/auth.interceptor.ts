@@ -1,10 +1,11 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { apiUrl } from './api';
 
 function logout() {
   // Wywołanie logout na backendzie
-  fetch('/api/auth/logout', {
+  fetch(apiUrl('/auth/logout'), {
     method: 'GET',
     credentials: 'include'
   }).finally(() => {

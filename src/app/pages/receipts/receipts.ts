@@ -191,7 +191,6 @@ export class Receipts implements OnInit {
   removedProducts: Set<string> = new Set();
 
   get availableProductsForEdit() {
-    // Produkty, które nie są w przyjęciu lub zostały usunięte z przyjęcia
     const usedUuids = new Set([
       ...(this.selectedReceipt?.products?.map((p: any) => p.uuid) ?? []),
       ...Array.from(this.removedProducts)
@@ -201,7 +200,6 @@ export class Receipts implements OnInit {
 
   startEditReceipt(receipt: any) {
     this.editReceiptUuid = receipt.uuid;
-    // Zamień kontrahenta na id jeśli to string
     let contractorId = this.contractors.find(c => c.name === receipt.contractor)?.id;
     if (!contractorId && typeof receipt.contractor === 'number') {
       contractorId = receipt.contractor;
@@ -263,7 +261,6 @@ export class Receipts implements OnInit {
         this.toast.show('success', 'Sukces', 'Przyjęcie zostało zaktualizowane, plik został pobrany.');
       },
       error: (err) => {
-        // Obsługa przypadku, gdy serwer zwraca plik jako błąd (status 200)
         if (err.status === 200 && err.error instanceof Blob) {
           const filename = 'przyjecie.docx';
           const url = window.URL.createObjectURL(err.error);

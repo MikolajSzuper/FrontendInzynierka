@@ -27,7 +27,6 @@ export class HelpRequest implements OnInit {
   ngOnInit() {
     this.http.get<Report[]>(apiUrl('/auth/reports'), { withCredentials: true }).subscribe({
       next: (data) => {
-        // Sortuj od najnowszych do najstarszych
         this.reports = data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       },
       error: (err) => {

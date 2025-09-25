@@ -84,7 +84,6 @@ export class Halls {
       if (!loc._free) shelf.occupied += 1;
     }
 
-    // Zamiana map na tablice
     return Array.from(hallsMap.entries()).map(([id, hall]) => ({
       id,
       name: hall.name,

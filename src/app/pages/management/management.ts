@@ -49,7 +49,6 @@ export class Management {
   activeTab: 'addItem' | 'halls' | 'categories' = 'addItem';
   isSupervisor = localStorage.getItem('user_type') === 'SUPERVISOR';
 
-  // Dane do dodawania towaru
   item = {
     id: '',
     name: '',
@@ -71,17 +70,14 @@ export class Management {
     contractor: ''
   };
 
-  // Dane do widoku hal
   places: Place[] = [];
   halls: number[] = [];
   shelves: { [hall: number]: number[] } = {};
   placesByShelf: { [shelf: number]: Place[] } = {};
 
-  // Kategorie
   categories: Category[] = [];
   newCategoryName = '';
 
-  // Formularze dodawania
   newHall = '';
   newShelf = { hall: '', shelf: '' };
   newPlace = { hall: '', shelf: '' };
@@ -144,7 +140,6 @@ export class Management {
         const locations = data.locations;
         this.places = locations.map((loc: any) => ({ ...loc }));
 
-        // Grupowanie hal z regałami (z UUID)
         const hallsMap: { [hall_uuid: string]: HallInfo } = {};
         for (const loc of locations) {
           if (!hallsMap[loc.hall_uuid]) {
@@ -163,10 +158,8 @@ export class Management {
         }
         this.hallsInfo = Object.values(hallsMap);
 
-        // Grupa hal po nazwie
         this.halls = Array.from(new Set(locations.map((loc: any) => loc.hall_name)));
 
-        // Grupa półek po nazwie dla każdej hali
         this.shelves = {};
         for (const hallName of this.halls) {
           this.shelves[hallName] = Array.from(
@@ -178,7 +171,6 @@ export class Management {
           );
         }
 
-        // Grupa miejsc po nazwie półki
         this.placesByShelf = {};
         for (const shelfName of locations.map((loc: any) => loc.shelf_name)) {
           this.placesByShelf[shelfName] = locations.filter((loc: any) => loc.shelf_name === shelfName);
@@ -266,7 +258,6 @@ export class Management {
       { withCredentials: true }
     ).subscribe({
       next: (response: any) => {
-        // Wyciągnij nazwę hali z odpowiedzi serwera
         let hallName = newHallName;
         if (response?.message) {
           const match = response.message.match(/Utworzono hale (Hala \d+)/i);
@@ -289,7 +280,6 @@ export class Management {
   }
 
   addShelf(hall_uuid: string, hall_name?: string) {
-    // Jeśli przekazano nazwę hali, użyj jej, w przeciwnym razie pobierz z hallsInfo
     let hallNumber = '1';
     if (hall_name) {
       const hallMatch = hall_name.match(/(\d+)/);
@@ -302,7 +292,6 @@ export class Management {
       }
     }
 
-    // Pobierz liczbę regałów w tej hali
     const hall = this.hallsInfo.find(h => h.hall_uuid === hall_uuid);
     const shelfNumber = hall ? hall.shelves.length + 1 : 1;
 
@@ -316,7 +305,6 @@ export class Management {
     ).subscribe({
       next: (response: any) => {
         if (response?.uuid) {
-          // Dodaj miejsce "Miejsce 1"
           this.addPlace(response.uuid);
         } else {
           this.loadPlaces();
@@ -330,7 +318,6 @@ export class Management {
   }
 
   addPlace(shelf_uuid: string) {
-    // Pobierz liczbę miejsc na danym regale
     const currentPlaces = this.places.filter(p => p.shelf_uuid === shelf_uuid);
     const nextPlaceNumber = currentPlaces.length + 1;
     const spotName = `Miejsce ${nextPlaceNumber}`;
@@ -365,7 +352,6 @@ export class Management {
     };
     this.http.post(apiUrl('/products'), payload, { withCredentials: true }).subscribe({
       next: () => {
-        // Zaktualizuj lokalnie miejsce jako zajęte
         const spotId = Number(this.product.spot);
         const place = this.places.find(p => p.id === spotId);
         if (place) place._free = false;

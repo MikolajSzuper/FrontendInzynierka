@@ -57,7 +57,6 @@ export class Search implements OnInit {
   moveProductData: any = {};
   isAdminOrSupervisor = ['ADMIN', 'SUPERVISOR'].includes(localStorage.getItem('user_type') || '');
 
-  // Filtry
   filter = {
     uuid: '',
     rfid: '',
@@ -81,13 +80,12 @@ export class Search implements OnInit {
     this.loadProducts();
     this.loadContractors();
     this.loadPlaces();
-    this.loadCategories(); // Dodaj ładowanie kategorii
+    this.loadCategories();
   }
 
   buildQueryParams(): string {
     const params = [];
     Object.entries(this.filter).forEach(([key, value]) => {
-      // Nie wysyłaj pustych wartości dla kontrahenta i miejsca
       if ((key === 'contractor' || key === 'spot') && (!value || value === '')) return;
       if (value && value !== '') params.push(`${key}=${encodeURIComponent(value)}`);
     });
@@ -113,7 +111,6 @@ export class Search implements OnInit {
           this.currentPage = 0;
           return;
         }
-        // Pobierz szczegóły dla każdego produktu równolegle
         const productsWithDetails = await Promise.all(
           data.content.map(async (product: Product) => {
             try {
@@ -330,7 +327,6 @@ export class Search implements OnInit {
   }
 
   getEditPlaces(product: Product) {
-    // Zwraca listę wolnych miejsc + aktualne miejsce produktu (jeśli nie jest wolne)
     const freePlaces = this.getFreePlaces();
     const currentPlace = this.places.find(p => p.id === product.spot.id);
     if (currentPlace && !currentPlace._free && !freePlaces.some(p => p.id === currentPlace.id)) {
