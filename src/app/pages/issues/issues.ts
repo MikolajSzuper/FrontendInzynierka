@@ -146,7 +146,9 @@ export class Issues implements OnInit {
     this.loadingIssues = true;
     this.http.get<any[]>(apiUrl('/productService/issues'), { withCredentials: true }).subscribe({
       next: (data) => {
-        this.issuesList = data ?? [];
+        this.issuesList = (data ?? []).sort((a, b) => 
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
         this.loadingIssues = false;
       },
       error: () => {
