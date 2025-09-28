@@ -157,7 +157,9 @@ export class Receipts implements OnInit {
     this.loadingReceipts = true;
     this.http.get<any[]>(apiUrl('/productService/receipts'), { withCredentials: true }).subscribe({
       next: (data) => {
-        this.receiptsList = data ?? [];
+        this.receiptsList = (data ?? []).sort((a, b) => 
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
         this.loadingReceipts = false;
       },
       error: () => {

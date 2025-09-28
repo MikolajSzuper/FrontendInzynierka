@@ -62,19 +62,7 @@
                       }
                     </span>
                   </div>
-                  <div class="flex flex-wrap items-center gap-x-8 gap-y-2">
-                    <span class="text-gray-600 text-sm font-semibold">
-                      Kategoria:
-                      @if (editProductUuid === product.uuid) {
-                        <select [(ngModel)]="editProductData.category" name="editCategory{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 border">
-                          @for (cat of categories; track cat.id) {
-                            <option [value]="cat.id">{{cat.name}}</option>
-                          }
-                        </select>
-                      } @else {
-                        <span class="font-normal">{{product.category.name}}</span>
-                      }
-                    </span>
+                  <div class="flex flex-col items-left gap-x-8 gap-y-2">
                     <span class="text-gray-600 text-sm font-semibold">
                       Kontrahent:
                       @if (editProductUuid === product.uuid) {
@@ -85,6 +73,18 @@
                         </select>
                       } @else {
                         <span class="font-normal">{{product.contractor}}</span>
+                      }
+                    </span>
+                    <span class="text-gray-600 text-sm font-semibold">
+                      Kategoria:
+                      @if (editProductUuid === product.uuid) {
+                        <select [(ngModel)]="editProductData.category" name="editCategory{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 border">
+                          @for (cat of categories; track cat.id) {
+                            <option [value]="cat.id">{{cat.name}}</option>
+                          }
+                        </select>
+                      } @else {
+                        <span class="font-normal">{{product.category.name}}</span>
                       }
                     </span>
                   </div>
