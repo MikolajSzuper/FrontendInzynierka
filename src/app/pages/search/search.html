@@ -2,187 +2,193 @@
   <h1 class="text-2xl font-bold text-gray-800 mb-4">Wyszukiwanie produktów</h1>
 
   <!-- Filtry -->
-  <form class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6" (ngSubmit)="onFilterChange()">
-    <input [(ngModel)]="filter.uuid" name="uuid" placeholder="UUID" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400 font-semibold" (ngModelChange)="onFilterChange()" />
-    <input [(ngModel)]="filter.rfid" name="rfid" placeholder="RFID" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400 font-semibold" (ngModelChange)="onFilterChange()" />
-    <input [(ngModel)]="filter.name" name="name" placeholder="Nazwa" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400 font-semibold" (ngModelChange)="onFilterChange()" />
-    <select [(ngModel)]="filter.category" name="filterCategory" class="bg-gray-100 rounded-lg px-4 py-2 font-semibold" (ngModelChange)="onFilterChange()">
-      <option value="">Wybierz kategorię...</option>
-      @for (cat of categories; track cat.id) {
-        <option [value]="cat.name">{{cat.name}}</option>
-      }
-    </select>
-    <select [(ngModel)]="filter.contractor" name="filterContractor" class="bg-gray-100 rounded-lg px-4 py-2 font-semibold" (ngModelChange)="onFilterChange()">
-      <option value="">Wybierz kontrahenta...</option>
-      @for (c of contractors; track c.id) {
-        <option [value]="c.id">{{c.name}}</option>
-      }
-    </select>
-    <select [(ngModel)]="filter.spot" name="filterSpot" class="bg-gray-100 rounded-lg px-4 py-2 font-semibold" (ngModelChange)="onFilterChange()">
-      <option value="">Wybierz zajęte miejsce...</option>
-      @for (place of getOccupiedPlaces(); track place.id) {
-        <option [value]="place.id">{{place.spot_name}} ({{place.hall_name}}/{{place.shelf_name}})</option>
-      }
-    </select>
-    <input type="date" [(ngModel)]="filter.updated_at" name="updated_at" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400 font-semibold" (ngModelChange)="onFilterChange()" />
-    <div class="mt-2 text-center ">
-      <input type="checkbox" [(ngModel)]="archived" name="archived" (change)="onFilterChange()" class="mr-2 align-middle" id="archived-checkbox" />
-      <label for="archived-checkbox" class="font-semibold text-gray-700 align-middle">Archiwalne</label>
-    </div>
-  </form>
+   <div>
+    <label class="block text-sm text-gray-600 font-bold mb-4">Filtry wyszukiwania</label>
+    <form class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6" (ngSubmit)="onFilterChange()">
+      <input [(ngModel)]="filter.uuid" name="uuid" placeholder="UUID" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400 font-semibold" (ngModelChange)="onFilterChange()" />
+      <input [(ngModel)]="filter.rfid" name="rfid" placeholder="RFID" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400 font-semibold" (ngModelChange)="onFilterChange()" />
+      <input [(ngModel)]="filter.name" name="name" placeholder="Nazwa" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400 font-semibold" (ngModelChange)="onFilterChange()" />
+      <div class="mt-2 text-center ">
+        <input type="checkbox" [(ngModel)]="archived" name="archived" (change)="onFilterChange()" class="mr-2 align-middle" id="archived-checkbox" />
+        <label for="archived-checkbox" class="font-semibold text-gray-700 align-middle">Archiwalne</label>
+      </div>
+      <select [(ngModel)]="filter.category" name="filterCategory" class="bg-gray-100 rounded-lg px-4 py-2 font-semibold" (ngModelChange)="onFilterChange()">
+        <option value="">Wybierz kategorię...</option>
+        @for (cat of categories; track cat.id) {
+          <option [value]="cat.name">{{cat.name}}</option>
+        }
+      </select>
+      <select [(ngModel)]="filter.contractor" name="filterContractor" class="bg-gray-100 rounded-lg px-4 py-2 font-semibold" (ngModelChange)="onFilterChange()">
+        <option value="">Wybierz kontrahenta...</option>
+        @for (c of contractors; track c.id) {
+          <option [value]="c.id">{{c.name}}</option>
+        }
+      </select>
+      <select [(ngModel)]="filter.spot" name="filterSpot" class="bg-gray-100 rounded-lg px-4 py-2 font-semibold" (ngModelChange)="onFilterChange()">
+        <option value="">Wybierz zajęte miejsce...</option>
+        @for (place of getOccupiedPlaces(); track place.id) {
+          <option [value]="place.id">{{place.spot_name}} ({{place.hall_name}}/{{place.shelf_name}})</option>
+        }
+      </select>
+      <input type="date" [(ngModel)]="filter.updated_at" name="updated_at" class="bg-gray-100 rounded-lg px-4 py-2 placeholder-gray-400 font-semibold" (ngModelChange)="onFilterChange()" />
+    </form>
+   </div>
 
   <!-- Lista produktów -->
-  <div class="flex-1 overflow-auto">
-    <div class="flex flex-col gap-6">
-      @for (product of products; let i = $index; track product.uuid) {
-        <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col border border-gray-200 hover:shadow-xl transition min-h-[160px]">
-          <div class="flex flex-col h-full">
-            <div class="flex flex-col md:flex-row md:items-start gap-4 flex-1">
-              <div class="flex-1 flex flex-col gap-2">
-                <div class="flex flex-wrap items-center gap-x-8 gap-y-2">
-                  <span class="text-xl font-bold text-orange-700">
-                    @if (editProductUuid === product.uuid) {
-                      <input [(ngModel)]="editProductData.name" name="editName{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 font-bold border" />
-                    } @else {
-                      {{product.name}}
-                    }
-                  </span>
-                  <span class="ml-2 text-xs text-gray-400 font-mono">UUID: {{product.uuid}}</span>
-                  <span class="text-gray-600 text-sm font-mono">
-                    RFID:
-                    @if (editProductUuid === product.uuid) {
-                      <input [(ngModel)]="editProductData.rfid" name="editRfid{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 font-mono w-34 border" />
-                    } @else {
-                      {{product.rfid}}
-                    }
-                  </span>
+   <div>
+    <label class="block text-sm text-gray-600 font-bold mb-4">Wyniki wyszukiwania</label>
+    <div class="flex-1 overflow-auto">
+      <div class="flex flex-col gap-6">
+        @for (product of products; let i = $index; track product.uuid) {
+          <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col border border-gray-200 hover:shadow-xl transition min-h-[160px]">
+            <div class="flex flex-col h-full">
+              <div class="flex flex-col md:flex-row md:items-start gap-4 flex-1">
+                <div class="flex-1 flex flex-col gap-2">
+                  <div class="flex flex-wrap items-center gap-x-8 gap-y-2">
+                    <span class="text-xl font-bold text-orange-700">
+                      @if (editProductUuid === product.uuid) {
+                        <input [(ngModel)]="editProductData.name" name="editName{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 font-bold border" />
+                      } @else {
+                        {{product.name}}
+                      }
+                    </span>
+                    <span class="ml-2 text-xs text-gray-400 font-mono">UUID: {{product.uuid}}</span>
+                    <span class="text-gray-600 text-sm font-mono">
+                      RFID:
+                      @if (editProductUuid === product.uuid) {
+                        <input [(ngModel)]="editProductData.rfid" name="editRfid{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 font-mono w-34 border" />
+                      } @else {
+                        {{product.rfid}}
+                      }
+                    </span>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-x-8 gap-y-2">
+                    <span class="text-gray-600 text-sm font-semibold">
+                      Kategoria:
+                      @if (editProductUuid === product.uuid) {
+                        <select [(ngModel)]="editProductData.category" name="editCategory{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 border">
+                          @for (cat of categories; track cat.id) {
+                            <option [value]="cat.id">{{cat.name}}</option>
+                          }
+                        </select>
+                      } @else {
+                        <span class="font-normal">{{product.category.name}}</span>
+                      }
+                    </span>
+                    <span class="text-gray-600 text-sm font-semibold">
+                      Kontrahent:
+                      @if (editProductUuid === product.uuid) {
+                        <select [(ngModel)]="editProductData.contractor" name="editContractor{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 border">
+                          @for (c of contractors; track c.id) {
+                            <option [value]="c.id">{{c.name}}</option>
+                          }
+                        </select>
+                      } @else {
+                        <span class="font-normal">{{product.contractor}}</span>
+                      }
+                    </span>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-x-8 gap-y-2">
+                    <span class="text-gray-600 text-sm font-semibold">
+                      Lokalizacja:
+                      @if (moveProductUuid === product.uuid) {
+                        <select [(ngModel)]="moveProductData.spot" name="moveSpot{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 border">
+                          @for (place of getEditPlaces(product); track place.id) {
+                            <option [value]="place.id">{{place.spot_name}} ({{place.hall_name}}/{{place.shelf_name}})</option>
+                          }
+                        </select>
+                      } @else {
+                        <span class="font-normal">
+                          {{product.spot.shelf.hall.name}},
+                          {{product.spot.shelf.name}},
+                          {{product.spot.name}}
+                        </span>
+                      }
+                    </span>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-x-8 gap-y-2">
+                    <span class="text-gray-600 text-sm font-semibold">
+                      Waga:
+                      @if (editProductUuid === product.uuid) {
+                        <input type="number" [(ngModel)]="editProductData.weight" name="editWeight{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 w-16 border" />
+                      } @else {
+                        <span class="font-normal">{{product.weight}}</span>
+                      }
+                    </span>
+                    <span class="text-gray-600 text-sm font-semibold">
+                      Wysokość:
+                      @if (editProductUuid === product.uuid) {
+                        <input type="number" [(ngModel)]="editProductData.height" name="editHeight{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 w-16 border" />
+                      } @else {
+                        <span class="font-normal">{{product.height}}</span>
+                      }
+                    </span>
+                    <span class="text-gray-600 text-sm font-semibold">
+                      Szerokość:
+                      @if (editProductUuid === product.uuid) {
+                        <input type="number" [(ngModel)]="editProductData.width" name="editWidth{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 w-16 border" />
+                      } @else {
+                        <span class="font-normal">{{product.width}}</span>
+                      }
+                    </span>
+                  </div>
                 </div>
-                <div class="flex flex-wrap items-center gap-x-8 gap-y-2">
-                  <span class="text-gray-600 text-sm font-semibold">
-                    Kategoria:
-                    @if (editProductUuid === product.uuid) {
-                      <select [(ngModel)]="editProductData.category" name="editCategory{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 border">
-                        @for (cat of categories; track cat.id) {
-                          <option [value]="cat.id">{{cat.name}}</option>
-                        }
-                      </select>
-                    } @else {
-                      <span class="font-normal">{{product.category.name}}</span>
-                    }
-                  </span>
-                  <span class="text-gray-600 text-sm font-semibold">
-                    Kontrahent:
-                    @if (editProductUuid === product.uuid) {
-                      <select [(ngModel)]="editProductData.contractor" name="editContractor{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 border">
-                        @for (c of contractors; track c.id) {
-                          <option [value]="c.id">{{c.name}}</option>
-                        }
-                      </select>
-                    } @else {
-                      <span class="font-normal">{{product.contractor}}</span>
-                    }
-                  </span>
-                </div>
-                <div class="flex flex-wrap items-center gap-x-8 gap-y-2">
-                  <span class="text-gray-600 text-sm font-semibold">
-                    Lokalizacja:
-                    @if (moveProductUuid === product.uuid) {
-                      <select [(ngModel)]="moveProductData.spot" name="moveSpot{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 border">
-                        @for (place of getEditPlaces(product); track place.id) {
-                          <option [value]="place.id">{{place.spot_name}} ({{place.hall_name}}/{{place.shelf_name}})</option>
-                        }
-                      </select>
-                    } @else {
-                      <span class="font-normal">
-                        {{product.spot.shelf.hall.name}},
-                        {{product.spot.shelf.name}},
-                        {{product.spot.name}}
-                      </span>
-                    }
-                  </span>
-                </div>
-                <div class="flex flex-wrap items-center gap-x-8 gap-y-2">
-                  <span class="text-gray-600 text-sm font-semibold">
-                    Waga:
-                    @if (editProductUuid === product.uuid) {
-                      <input type="number" [(ngModel)]="editProductData.weight" name="editWeight{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 w-16 border" />
-                    } @else {
-                      <span class="font-normal">{{product.weight}}</span>
-                    }
-                  </span>
-                  <span class="text-gray-600 text-sm font-semibold">
-                    Wysokość:
-                    @if (editProductUuid === product.uuid) {
-                      <input type="number" [(ngModel)]="editProductData.height" name="editHeight{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 w-16 border" />
-                    } @else {
-                      <span class="font-normal">{{product.height}}</span>
-                    }
-                  </span>
-                  <span class="text-gray-600 text-sm font-semibold">
-                    Szerokość:
-                    @if (editProductUuid === product.uuid) {
-                      <input type="number" [(ngModel)]="editProductData.width" name="editWidth{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 w-16 border" />
-                    } @else {
-                      <span class="font-normal">{{product.width}}</span>
-                    }
-                  </span>
-                </div>
-              </div>
-              <div class="flex flex-col justify-between items-end flex-1 min-w-[220px]">
-                <div class="flex flex-row gap-2 mb-2">
-                  @if (!archived) {
-                    @if (editProductUuid === product.uuid) {
-                      <button type="button" (click)="saveEditProduct()" class="w-full bg-orange-600 text-white font-semibold px-4 py-1 rounded-lg shadow hover:bg-orange-700 transition cursor-pointer col-span-2">Zapisz</button>
-                      <button type="button" (click)="cancelEditProduct()" class="w-full bg-gray-200 text-gray-700 px-4 py-1 rounded cursor-pointer hover:bg-orange-100 hover:text-orange-700">Anuluj</button>
-                    } @else if (moveProductUuid === product.uuid) {
-                      <button type="button" (click)="transferProduct()" class="w-full bg-orange-600 text-white font-semibold px-4 py-1 rounded-lg shadow hover:bg-orange-700 transition cursor-pointer col-span-2">Przenieś</button>
-                      <button type="button" (click)="cancelMoveProduct()" class="w-full bg-gray-200 text-gray-700 px-4 py-1 rounded cursor-pointer hover:bg-orange-100 hover:text-orange-700">Anuluj</button>
-                    } @else {
-                      <button class="p-2 text-blue-600 hover:bg-blue-100 rounded cursor-pointer" (click)="startEditProduct(product)">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                        </svg>
-                      </button>
-                      <button class="p-2 text-green-600 hover:bg-green-100 rounded cursor-pointer" (click)="startMoveProduct(product)">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <polyline points="23 7 23 1 17 1"></polyline>
-                          <line x1="16" y1="8" x2="23" y2="1"></line>
-                          <rect x="1" y="15" width="22" height="8" rx="2" ry="2"></rect>
-                        </svg>
-                      </button>
-                      @if (isAdminOrSupervisor) {
-                        <button class="p-2 text-red-600 hover:bg-red-100 rounded cursor-pointer" (click)="deleteProduct(product.uuid)">
+                <div class="flex flex-col justify-between items-end flex-1 min-w-[220px]">
+                  <div class="flex flex-row gap-2 mb-2">
+                    @if (!archived) {
+                      @if (editProductUuid === product.uuid) {
+                        <button type="button" (click)="saveEditProduct()" class="w-full bg-orange-600 text-white font-semibold px-4 py-1 rounded-lg shadow hover:bg-orange-700 transition cursor-pointer col-span-2">Zapisz</button>
+                        <button type="button" (click)="cancelEditProduct()" class="w-full bg-gray-200 text-gray-700 px-4 py-1 rounded cursor-pointer hover:bg-orange-100 hover:text-orange-700">Anuluj</button>
+                      } @else if (moveProductUuid === product.uuid) {
+                        <button type="button" (click)="transferProduct()" class="w-full bg-orange-600 text-white font-semibold px-4 py-1 rounded-lg shadow hover:bg-orange-700 transition cursor-pointer col-span-2">Przenieś</button>
+                        <button type="button" (click)="cancelMoveProduct()" class="w-full bg-gray-200 text-gray-700 px-4 py-1 rounded cursor-pointer hover:bg-orange-100 hover:text-orange-700">Anuluj</button>
+                      } @else {
+                        <button class="p-2 text-blue-600 hover:bg-blue-100 rounded cursor-pointer" (click)="startEditProduct(product)">
                           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="8" y1="12" x2="16" y2="12"></line>
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                           </svg>
                         </button>
+                        <button class="p-2 text-green-600 hover:bg-green-100 rounded cursor-pointer" (click)="startMoveProduct(product)">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="23 7 23 1 17 1"></polyline>
+                            <line x1="16" y1="8" x2="23" y2="1"></line>
+                            <rect x="1" y="15" width="22" height="8" rx="2" ry="2"></rect>
+                          </svg>
+                        </button>
+                        @if (isAdminOrSupervisor) {
+                          <button class="p-2 text-red-600 hover:bg-red-100 rounded cursor-pointer" (click)="deleteProduct(product.uuid)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <circle cx="12" cy="12" r="10"></circle>
+                              <line x1="8" y1="12" x2="16" y2="12"></line>
+                            </svg>
+                          </button>
+                        }
                       }
                     }
-                  }
-                </div>
-                <div class="w-full mt-2">
-                  <div class="text-gray-700 text-sm font-semibold mb-1">Opis:</div>
-                  <div class="bg-gray-50 rounded p-2 min-h-[48px] max-h-[120px] overflow-y-auto text-gray-700 text-sm break-words">
-                    @if (editProductUuid === product.uuid) {
-                      <input [(ngModel)]="editProductData.description" name="editDescription{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 w-full border" />
-                    } @else {
-                      {{product.description || '—'}}
-                    }
+                  </div>
+                  <div class="w-full mt-2">
+                    <div class="text-gray-700 text-sm font-semibold mb-1">Opis:</div>
+                    <div class="bg-gray-50 rounded p-2 min-h-[48px] max-h-[120px] overflow-y-auto text-gray-700 text-sm break-words">
+                      @if (editProductUuid === product.uuid) {
+                        <input [(ngModel)]="editProductData.description" name="editDescription{{product.uuid}}" class="bg-gray-100 rounded px-2 py-1 w-full border" />
+                      } @else {
+                        {{product.description || '—'}}
+                      }
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="flex justify-end mt-4">
-              <span class="text-xs text-gray-400">Aktualizacja: {{product.updated_at | date:'yyyy-MM-dd HH:mm:ss'}}</span>
+              <div class="flex justify-end mt-4">
+                <span class="text-xs text-gray-400">Aktualizacja: {{product.updated_at | date:'yyyy-MM-dd HH:mm:ss'}}</span>
+              </div>
             </div>
           </div>
-        </div>
-      }
-      @if (products.length === 0) {
-        <div class="px-4 py-8 text-center text-gray-500 bg-gray-50 rounded-xl shadow">Brak wyników</div>
-      }
+        }
+        @if (products.length === 0) {
+          <div class="px-4 py-8 text-center text-gray-500 bg-gray-50 rounded-xl shadow">Brak wyników</div>
+        }
+      </div>
     </div>
   </div>
 
