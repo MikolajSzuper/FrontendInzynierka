@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
 import { apiUrl } from '../../services/api';
 import { WAREHOUSE_UUID } from '../../app.config';
 import { ToastService } from '../../services/toast-service';
@@ -45,7 +46,7 @@ interface Category {
   templateUrl: './management.html',
   styleUrl: './management.css'
 })
-export class Management {
+export class Management implements OnInit {
   activeTab: 'addItem' | 'halls' | 'categories' = 'addItem';
   isSupervisor = localStorage.getItem('user_type') === 'SUPERVISOR';
 
@@ -86,12 +87,41 @@ export class Management {
 
   contractors: { id: number, name: string }[] = [];
 
-  constructor(private http: HttpClient, private toast: ToastService) {}
+  constructor(
+    private http: HttpClient, 
+    private toast: ToastService,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
     this.loadCategories();
     this.loadContractors();
     this.loadPlaces();
+    
+    // Obsługa query params
+    this.route.queryParams.subscribe(params => {
+      if (params['shelf'] && params['tab']) {
+        this.activeTab = params['tab'];
+        // Poczekaj na załadowanie danych, a następnie ustaw losowe miejsce
+        setTimeout(() => {
+          this.selectRandomSpotFromShelf(params['shelf']);
+        }, 500);
+      }
+    });
+  }
+
+  private selectRandomSpotFromShelf(shelfId: string) {
+    // Znajdź wolne miejsca w danym regale
+    const shelfSpots = this.places.filter(p => p.shelf_uuid === shelfId && p._free);
+    
+    if (shelfSpots.length > 0) {
+      // Wybierz losowe miejsce
+      const randomSpot = shelfSpots[Math.floor(Math.random() * shelfSpots.length)];
+      this.product.spot = String(randomSpot.id);
+    } else {
+      // Jeśli brak wolnych miejsc, pokaż powiadomienie
+      this.toast.show('error', 'Uwaga', 'Brak wolnych miejsc w wybranym regale');
+    }
   }
 
   setTab(tab: 'addItem' | 'halls' | 'categories') {

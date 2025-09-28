@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NgClass, CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { apiUrl } from '../../services/api';
 import { WAREHOUSE_UUID } from '../../app.config';
 
@@ -43,7 +44,7 @@ export class Halls {
   halls: HallView[] = [];
   selectedHall: HallView | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit() {
     this.http.get<any>(apiUrl(`/warehouseManagement/warehouses/${WAREHOUSE_UUID}`), { withCredentials: true }).subscribe({
@@ -57,6 +58,15 @@ export class Halls {
 
   selectHall(hall: HallView) {
     this.selectedHall = hall;
+  }
+
+  goToManagementWithShelf(shelfId: string) {
+    this.router.navigate(['/app/management'], { 
+      queryParams: { 
+        shelf: shelfId,
+        tab: 'addItem'
+      } 
+    });
   }
 
   private mapLocationsToHalls(locations: Location[]): HallView[] {

@@ -22,21 +22,25 @@
   @if (selectedHall) {
     <div class="flex-1 w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
       @for (rack of selectedHall.racks; track rack.id) {
-        <div class="bg-gray-100 rounded-lg p-6 shadow flex flex-col items-center h-full">
-          <h2 class="font-semibold text-lg text-gray-700 mb-2">
-            Regał {{ rack.name.split('.')[1] || rack.name }}
-          </h2>
+        <div class="bg-gray-100 rounded-lg p-6 pt-4 shadow flex flex-col items-center h-full">
+          <div class="flex items-center justify-between w-full mb-2">
+            <h2 class="font-semibold text-lg text-gray-700">
+              Regał {{ rack.name.split('.')[1] || rack.name }}
+            </h2>
+            <button 
+              (click)="goToManagementWithShelf(rack.id)"
+              class="bg-orange-600 text-white p-1 rounded-full hover:bg-orange-700 transition cursor-pointer"
+              title="Dodaj produkt do tego regału">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          </div>
           <div class="w-full flex flex-col items-center mb-4">
             <span class="text-sm text-gray-500">Zajęte miejsca</span>
             <span class="text-xl font-bold text-orange-600">{{ rack.occupied }} / {{ rack.total }}</span>
             <span class="text-xs text-gray-400">zajęte / wszystkie</span>
           </div>
-          <!-- <button
-            class="mt-auto bg-orange-600 text-white px-6 py-2 rounded hover:bg-orange-700 transition cursor-pointer w-full font-semibold"
-            routerLink="/search"
-          >
-            Szczegóły
-          </button> -->
         </div>
       }
     </div>
