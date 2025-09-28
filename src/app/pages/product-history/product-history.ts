@@ -12,7 +12,7 @@ import { apiUrl } from '../../services/api';
   styleUrl: './product-history.css'
 })
 export class ProductHistory {
-  uuid = '';
+  rfid = '';
   loading = false;
   history: any[] = [];
 
@@ -20,9 +20,9 @@ export class ProductHistory {
 
   fetchHistory() {
     this.history = [];
-    if (!this.uuid.trim()) return;
+    if (!this.rfid.trim()) return;
     this.loading = true;
-    this.http.get<any>(apiUrl(`/products/history/${this.uuid.trim()}`), { withCredentials: true }).subscribe({
+    this.http.get<any>(apiUrl(`/products/history/${this.rfid.trim()}`), { withCredentials: true }).subscribe({
       next: (res) => {
         this.history = (res.productHistory || []).sort(
           (a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
