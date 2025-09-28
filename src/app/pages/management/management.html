@@ -30,7 +30,7 @@
 
   <!-- Formularz dodawania towaru -->
   @if (activeTab === 'addItem') {
-  <form class="flex flex-col gap-4 mb-8 max-w-4xl" (ngSubmit)="addProduct()">
+  <form class="flex flex-col gap-4 mb-8 w-full" (ngSubmit)="addProduct()">
     <!-- Podstawowe pola - każde w osobnej linii -->
     <div>
       <label class="block text-xs text-gray-600 mb-1">RFID</label>
@@ -52,7 +52,7 @@
     </div>
 
     <!-- Szczegółowe pola (wymiary i waga) - obok siebie -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
       <div>
         <label class="block text-xs text-gray-600 mb-1">Waga [kg]</label>
         <input type="number" [(ngModel)]="product.weight" name="weight" step="0.01"
@@ -74,7 +74,7 @@
     </div>
 
     <!-- Pola wybierane z select - obok siebie -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
       <div>
         <label class="block text-xs text-gray-600 mb-1">Kategoria</label>
         <select [(ngModel)]="product.category" name="category" required
