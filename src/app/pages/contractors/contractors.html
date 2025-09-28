@@ -18,11 +18,22 @@
   </div>
 
   @if (activeTab === 'add') {
-    <form class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" (ngSubmit)="addContractor()">
-      <input [(ngModel)]="newContractor.name" name="name" required placeholder="Nazwa" class="bg-gray-300 rounded-lg px-4 py-2 placeholder-gray-400 font-semibold" />
-      <input [(ngModel)]="newContractor.phone" name="phone" required placeholder="Telefon" class="bg-gray-300 rounded-lg px-4 py-2 placeholder-gray-400 font-semibold" />
-      <input [(ngModel)]="newContractor.email" name="email" required placeholder="Email" class="bg-gray-300 rounded-lg px-4 py-2 placeholder-gray-400 font-semibold" />
+    <form class="flex flex-col gap-4 mb-8 w-full" (ngSubmit)="addContractor()">
+      <div>
+      <label class="block text-sm text-gray-600 font-bold mb-1">Nazwa</label>
+      <input [(ngModel)]="newContractor.name" name="name" required placeholder="Nazwa kontrahenta" class="bg-gray-300 rounded-lg px-4 py-2 placeholder-gray-400 w-full font-semibold" />
+      </div>
+      <div>
+      <label class="block text-sm text-gray-600 font-bold mb-1">Telefon</label>
+      <input [(ngModel)]="newContractor.phone" name="phone" required placeholder="Telefon np. 543264254" class="bg-gray-300 rounded-lg px-4 py-2 placeholder-gray-400 w-full font-semibold" />
+      </div>
+      <div>
+      <label class="block text-sm text-gray-600 font-bold mb-1">Email</label>
+      <input [(ngModel)]="newContractor.email" name="email" required placeholder="Email np. kontakt@przyklad.pl" class="bg-gray-300 rounded-lg px-4 py-2 placeholder-gray-400 w-full font-semibold" />
+      </div>
+      <div class="flex mt-2">
       <button type="submit" class="bg-orange-600 text-white font-semibold px-6 py-2 rounded-lg shadow hover:bg-orange-700 transition cursor-pointer">Dodaj</button>
+      </div>
     </form>
   }
 

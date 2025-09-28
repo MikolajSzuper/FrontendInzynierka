@@ -33,19 +33,19 @@
   <form class="flex flex-col gap-4 mb-8 w-full" (ngSubmit)="addProduct()">
     <!-- Podstawowe pola - każde w osobnej linii -->
     <div>
-      <label class="block text-xs text-gray-600 mb-1">RFID</label>
+      <label class="block text-sm text-gray-600 font-bold mb-1">RFID</label>
       <input type="text" [(ngModel)]="product.rfid" name="rfid" required
         placeholder="np. 245376811"
         class="w-full bg-gray-300 border-none rounded-lg px-4 py-2 text-gray-900 font-semibold placeholder-gray-400" />
     </div>
     <div>
-      <label class="block text-xs text-gray-600 mb-1">Nazwa</label>
+      <label class="block text-sm text-gray-600 font-bold mb-1">Nazwa</label>
       <input type="text" [(ngModel)]="product.name" name="name" required
         placeholder="np. Krzesło biurowe"
         class="w-full bg-gray-300 border-none rounded-lg px-4 py-2 text-gray-900 font-semibold placeholder-gray-400" />
     </div>
     <div>
-      <label class="block text-xs text-gray-600 mb-1">Opis</label>
+      <label class="block text-sm text-gray-600 font-bold mb-1">Opis</label>
       <input type="text" [(ngModel)]="product.description" name="description"
         placeholder="np. Dobrej jakości krzesło"
         class="w-full bg-gray-300 border-none rounded-lg px-4 py-2 text-gray-900 font-semibold placeholder-gray-400" />
@@ -54,19 +54,19 @@
     <!-- Szczegółowe pola (wymiary i waga) - obok siebie -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
       <div>
-        <label class="block text-xs text-gray-600 mb-1">Waga [kg]</label>
+        <label class="block text-sm text-gray-600 font-bold mb-1">Waga [kg]</label>
         <input type="number" [(ngModel)]="product.weight" name="weight" step="0.01"
           placeholder="np. 1.8"
           class="w-full bg-gray-300 border-none rounded-lg px-4 py-2 text-gray-900 font-semibold placeholder-gray-400" />
       </div>
       <div>
-        <label class="block text-xs text-gray-600 mb-1">Wysokość [cm]</label>
+        <label class="block text-sm text-gray-600 font-bold mb-1">Wysokość [cm]</label>
         <input type="number" [(ngModel)]="product.height" name="height" step="0.01"
           placeholder="np. 85"
           class="w-full bg-gray-300 border-none rounded-lg px-4 py-2 text-gray-900 font-semibold placeholder-gray-400" />
       </div>
       <div>
-        <label class="block text-xs text-gray-600 mb-1">Szerokość [cm]</label>
+        <label class="block text-sm text-gray-600 font-bold mb-1">Szerokość [cm]</label>
         <input type="number" [(ngModel)]="product.width" name="width" step="0.01"
           placeholder="np. 32.5"
           class="w-full bg-gray-300 border-none rounded-lg px-4 py-2 text-gray-900 font-semibold placeholder-gray-400" />
@@ -76,7 +76,7 @@
     <!-- Pola wybierane z select - obok siebie -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
       <div>
-        <label class="block text-xs text-gray-600 mb-1">Kategoria</label>
+        <label class="block text-sm text-gray-600 font-bold mb-1">Kategoria</label>
         <select [(ngModel)]="product.category" name="category" required
           class="w-full bg-gray-300 border-none rounded-lg px-4 py-2 text-gray-900 font-semibold">
           <option value="" disabled selected hidden>Wybierz kategorię...</option>
@@ -86,7 +86,7 @@
         </select>
       </div>
       <div>
-        <label class="block text-xs text-gray-600 mb-1">Miejsce</label>
+        <label class="block text-sm text-gray-600 font-bold mb-1">Miejsce</label>
         <select [(ngModel)]="product.spot" name="spot" required
           class="w-full bg-gray-300 border-none rounded-lg px-4 py-2 text-gray-900 font-semibold">
           <option value="" disabled selected hidden>Wybierz miejsce...</option>
@@ -96,7 +96,7 @@
         </select>
       </div>
       <div>
-        <label class="block text-xs text-gray-600 mb-1">Kontrahent</label>
+        <label class="block text-sm text-gray-600 font-bold mb-1">Kontrahent</label>
         <select [(ngModel)]="product.contractor" name="contractor" required
           class="w-full bg-gray-300 border-none rounded-lg px-4 py-2 text-gray-900 font-semibold">
           <option value="" disabled selected hidden>Wybierz kontrahenta...</option>
