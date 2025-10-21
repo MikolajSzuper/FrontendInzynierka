@@ -5,7 +5,7 @@ services:
     image: szumiik/magazynex-frontend:latest
     
     ports:
-      - "80:80"
+      - "4200:80"
     environment:
       - API_URL=http://localhost:8080/api
     restart: unless-stopped
