@@ -1,38 +1,90 @@
-Magazynex - System Zarządzania Magazynem
-Aplikacja webowa do zarządzania magazynem, umożliwiająca śledzenie produktów, zarządzanie użytkownikami oraz przeprowadzanie inwentaryzacji.
+# System Zarządzania Magazynem
 
-Funkcjonalność
-Panel Administratora
-Zarządzanie użytkownikami - dodawanie, edycja i usuwanie kont
-Dostęp do pełnych raportów - przegląd wszystkich operacji w magazynie
-Panel Użytkownika
-Hale - przegląd hal magazynowych i regałów
-Zarządzanie - dodawanie, edycja i usuwanie produktów
-Wyszukiwanie - szybkie wyszukiwanie produktów po ID lub nazwie
-Inwentaryzacja - wsparcie procesu inwentaryzacji
-Technologie
-Frontend: Angular 20 z Tailwind CSS
-Backend: Spring Boot z bazą danych PostgreSQL
-Autoryzacja: JWT (JSON Web Tokens)
-Wymagania
-Node.js 18+ i npm
-Angular CLI 20.0.5+
-Serwer API na porcie 3000
-Instalacja
-Sklonuj repozytorium
+Praca inżynierska: System zarządzania magazynem z tagami RFID. - frontend
 
-Zainstaluj zależności
+## 🚀 Funkcjonalność
 
-Uruchom aplikację w trybie deweloperskim
+### Panel Administratora
+- 👥 **Zarządzanie użytkownikami** - dodawanie, edycja, usuwanie kont
+- 📊 **Zgłoszenia pomocy** - przeglądanie i obsługa zgłoszeń
 
-Otwórz przeglądarkę pod adresem http://localhost:4200
+### Panel Użytkownika/Supervisora
+- 🏢 **Hale** - przeglądanie struktury magazynu (hale, regały, miejsca)
+- ⚙️ **Zarządzanie** - dodawanie produktów, kategorii oraz struktury magazynu
+- 📦 **Przyjęcia/Wydania** - rejestracja ruchu towarów z dokumentami
+- 🔍 **Wyszukiwanie** - wyszukiwanie i edycja produktów (ID, nazwa, kategoria, RFID)
+- 🤝 **Kontrahenci** - zarządzanie bazą kontrahentów
+- 📋 **Inwentaryzacja** - przeprowadzanie kontroli stanu magazynu
+- 📜 **Historia produktów** - śledzenie wszystkich akcji na produktach
 
-Konfiguracja
-Aplikacja używa pliku .env do konfiguracji adresu API:
+## 🛠️ Technologie
 
-Budowanie do produkcji
-Pliki produkcyjne będą dostępne w katalogu dist/.
+- **Frontend**: Angular 20 + Tailwind CSS
+- **Autoryzacja**: JWT (JSON Web Tokens)
+- **Konteneryzacja**: Docker
 
-Role użytkowników
-ADMIN: dostęp do panelu zarządzania użytkownikami
-USER: dostęp do modułów magazynowych (hale, zarządzanie, wyszukiwanie, inwentaryzacja)
+## 📋 Wymagania
+
+- Node.js 18+
+- Angular CLI 20.0.5+
+- Docker (opcjonalnie)
+
+## 💻 Instalacja
+
+### Lokalnie
+
+```bash
+git clone <repository-url>
+
+npm install
+
+npm start
+```
+
+Aplikacja dostępna pod adresem: `http://localhost:4200`
+
+### Docker
+
+```bash
+docker build -t magazynex-frontend .
+
+docker run -p 4200:80 magazynex-frontend
+```
+
+### Docker Compose
+
+```bash
+docker-compose up -d
+```
+
+## ⚙️ Konfiguracja
+
+URL API można skonfigurować w pliku `src/app/services/api.ts`:
+
+```typescript
+export const API_BASE_URL = 'http://localhost:8080/api';
+```
+
+## 🔨 Budowanie
+
+### Środowisko deweloperskie
+```bash
+npm start
+```
+
+### Wersja produkcyjna
+```bash
+npm run build
+```
+
+## 👤 Role użytkowników
+
+| Rola | Uprawnienia |
+|------|-------------|
+| **ADMIN** | Zarządzanie użytkownikami, zgłoszenia, pełne raporty |
+| **SUPERVISOR** | Pełny dostęp do magazynu + zarządzanie strukturą |
+| **USER** | Podstawowe operacje magazynowe |
+
+## 📝 Licencja
+
+Praca inżynierska - Politechnika Lubelska
