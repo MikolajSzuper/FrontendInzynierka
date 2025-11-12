@@ -61,7 +61,40 @@ export class Contractors implements OnInit {
   }
 
   addContractor() {
-    this.http.post(apiUrl('/contractors/'), this.newContractor, { withCredentials: true }).subscribe({
+    const required = [
+      { value: this.newContractor.name, label: 'Nazwa' },
+      { value: this.newContractor.phone, label: 'Telefon' },
+      { value: this.newContractor.email, label: 'E-mail' }
+    ];
+    const missing = required
+      .filter(f => f.value === null || f.value === undefined || (typeof f.value === 'string' && f.value.trim() === ''))
+      .map(f => f.label);
+    if (missing.length > 0) {
+      this.toast.show('error', 'Błąd', `Brakuje pól: ${missing.join(', ')}`);
+      return;
+    }
+
+    const email = String(this.newContractor.email).trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      this.toast.show('error', 'Błąd', 'Nieprawidłowy format e-mail.');
+      return;
+    }
+
+    const phone = String(this.newContractor.phone).trim();
+    const phoneRegex = /^[0-9+\-\s()]{6,}$/; 
+    if (!phoneRegex.test(phone)) {
+      this.toast.show('error', 'Błąd', 'Nieprawidłowy numer telefonu.');
+      return;
+    }
+
+    const payload = {
+      name: String(this.newContractor.name).trim(),
+      phone,
+      email
+    };
+
+    this.http.post(apiUrl('/contractors/'), payload, { withCredentials: true }).subscribe({
       next: () => {
         this.showAddForm = false;
         this.newContractor = { name: '', phone: '', email: '' };
@@ -88,10 +121,37 @@ export class Contractors implements OnInit {
 
   saveEdit() {
     if (!this.editUuid) return;
+    const required = [
+      { value: this.editData.name, label: 'Nazwa' },
+      { value: this.editData.phone, label: 'Telefon' },
+      { value: this.editData.email, label: 'E-mail' }
+    ];
+    const missing = required
+      .filter(f => f.value === null || f.value === undefined || (typeof f.value === 'string' && f.value.trim() === ''))
+      .map(f => f.label);
+    if (missing.length > 0) {
+      this.toast.show('error', 'Błąd', `Brakuje pól: ${missing.join(', ')}`);
+      return;
+    }
+
+    const email = String(this.editData.email).trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      this.toast.show('error', 'Błąd', 'Nieprawidłowy format e-mail.');
+      return;
+    }
+
+    const phone = String(this.editData.phone).trim();
+    const phoneRegex = /^[0-9+\-\s()]{6,}$/;
+    if (!phoneRegex.test(phone)) {
+      this.toast.show('error', 'Błąd', 'Nieprawidłowy numer telefonu.');
+      return;
+    }
+
     const payload = {
-      name: this.editData.name,
-      phone: this.editData.phone,
-      email: this.editData.email
+      name: String(this.editData.name).trim(),
+      phone,
+      email
     };
     this.http.put(apiUrl(`/contractors/${this.editUuid}`), payload, { withCredentials: true }).subscribe({
       next: () => {
