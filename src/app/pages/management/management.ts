@@ -98,11 +98,9 @@ export class Management implements OnInit {
     this.loadContractors();
     this.loadPlaces();
     
-    // Obsługa query params
     this.route.queryParams.subscribe(params => {
       if (params['shelf'] && params['tab']) {
         this.activeTab = params['tab'];
-        // Poczekaj na załadowanie danych, a następnie ustaw losowe miejsce
         setTimeout(() => {
           this.selectRandomSpotFromShelf(params['shelf']);
         }, 500);
@@ -111,15 +109,12 @@ export class Management implements OnInit {
   }
 
   private selectRandomSpotFromShelf(shelfId: string) {
-    // Znajdź wolne miejsca w danym regale
     const shelfSpots = this.places.filter(p => p.shelf_uuid === shelfId && p._free);
     
     if (shelfSpots.length > 0) {
-      // Wybierz losowe miejsce
       const randomSpot = shelfSpots[Math.floor(Math.random() * shelfSpots.length)];
       this.product.spot = String(randomSpot.id);
     } else {
-      // Jeśli brak wolnych miejsc, pokaż powiadomienie
       this.toast.show('error', 'Uwaga', 'Brak wolnych miejsc w wybranym regale');
     }
   }
@@ -328,7 +323,6 @@ export class Management implements OnInit {
     const hall = this.hallsInfo.find(h => h.hall_uuid === hall_uuid);
     const shelfNumber = hall ? hall.shelves.length + 1 : 1;
 
-    // Nazwa regału w formacie "Regał X.Y"
     const shelfName = `Regał ${hallNumber}.${shelfNumber}`;
 
     this.http.post(
