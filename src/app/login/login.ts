@@ -69,7 +69,26 @@ export class Login {
   }
 
   sendForgotPassword() {
-    if (!this.forgotUsername.trim() || !this.forgotEmail.trim()) return;
+    const username = String(this.forgotUsername || '').trim();
+    const email = String(this.forgotEmail || '').trim();
+
+    const required = [
+      { value: username, label: 'Login' },
+      { value: email, label: 'E-mail' }
+    ];
+    const missing = required
+      .filter(f => f.value === null || f.value === undefined || (typeof f.value === 'string' && f.value.trim() === ''))
+      .map(f => f.label);
+    if (missing.length > 0) {
+      this.toast.show('error', 'Błąd', `Brakuje pól: ${missing.join(', ')}`);
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      this.toast.show('error', 'Błąd', 'Nieprawidłowy format e-mail.');
+      return;
+    }
     this.forgotSending = true;
     const payload = {
       username: this.forgotUsername.trim(),

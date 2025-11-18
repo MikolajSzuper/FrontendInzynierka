@@ -98,11 +98,9 @@ export class Management implements OnInit {
     this.loadContractors();
     this.loadPlaces();
     
-    // Obsługa query params
     this.route.queryParams.subscribe(params => {
       if (params['shelf'] && params['tab']) {
         this.activeTab = params['tab'];
-        // Poczekaj na załadowanie danych, a następnie ustaw losowe miejsce
         setTimeout(() => {
           this.selectRandomSpotFromShelf(params['shelf']);
         }, 500);
@@ -111,15 +109,12 @@ export class Management implements OnInit {
   }
 
   private selectRandomSpotFromShelf(shelfId: string) {
-    // Znajdź wolne miejsca w danym regale
     const shelfSpots = this.places.filter(p => p.shelf_uuid === shelfId && p._free);
     
     if (shelfSpots.length > 0) {
-      // Wybierz losowe miejsce
       const randomSpot = shelfSpots[Math.floor(Math.random() * shelfSpots.length)];
       this.product.spot = String(randomSpot.id);
     } else {
-      // Jeśli brak wolnych miejsc, pokaż powiadomienie
       this.toast.show('error', 'Uwaga', 'Brak wolnych miejsc w wybranym regale');
     }
   }
@@ -241,7 +236,10 @@ export class Management implements OnInit {
   }
 
   addCategory() {
-    if (!this.newCategoryName.trim()) return;
+    if (!this.newCategoryName.trim()){ 
+      this.toast.show('error', 'Błąd', 'Nazwa kategorii jest wymagana.'); 
+      return;
+    }
     this.http.post(apiUrl('/products/categories'), { name: this.newCategoryName.trim() }, { withCredentials: true }).subscribe({
       next: () => {
         this.newCategoryName = '';
@@ -325,7 +323,6 @@ export class Management implements OnInit {
     const hall = this.hallsInfo.find(h => h.hall_uuid === hall_uuid);
     const shelfNumber = hall ? hall.shelves.length + 1 : 1;
 
-    // Nazwa regału w formacie "Regał X.Y"
     const shelfName = `Regał ${hallNumber}.${shelfNumber}`;
 
     this.http.post(
@@ -369,33 +366,63 @@ export class Management implements OnInit {
   }
 
   addProduct() {
-    const payload = {
-      rfid: this.product.rfid,
-      name: this.product.name,
-      category: Number(this.product.category),
-      description: this.product.description,
-      weight: this.product.weight,
-      height: this.product.height,
-      width: this.product.width,
-      spot: Number(this.product.spot),
-      contractor: Number(this.product.contractor)
-    };
-    this.http.post(apiUrl('/products'), payload, { withCredentials: true }).subscribe({
-      next: () => {
-        const spotId = Number(this.product.spot);
-        const place = this.places.find(p => p.id === spotId);
-        if (place) place._free = false;
+    const requiredFields = [
+     { value: this.product.rfid, label: 'RFID' },
+     { value: this.product.name, label: 'Nazwa' },
+     { value: this.product.category, label: 'Kategoria' },
+     { value: this.product.description, label: 'Opis' },
+     { value: this.product.weight, label: 'Waga' },
+     { value: this.product.height, label: 'Wysokość' },
+     { value: this.product.width, label: 'Szerokość' },
+     { value: this.product.spot, label: 'Miejsce' },
+     { value: this.product.contractor, label: 'Kontrahent' }
+   ];
+   const missing = requiredFields
+     .filter(f => f.value === null || f.value === undefined || (typeof f.value === 'string' && f.value.trim() === ''))
+     .map(f => f.label);
 
-        this.clearAllFields();
-        this.toast.show('success', 'Sukces', 'Produkt został dodany');
-      },
-      error: (err) => {
-        const msg = err?.error?.message || 'Wystąpił błąd';
-        this.toast.show('error', 'Błąd', msg);
-        console.error('Błąd dodawania produktu:', err);
-      }
-    });
-  }
+   const invalidNumbers = [];
+   if (this.product.weight == null || isNaN(Number(this.product.weight))) invalidNumbers.push('Waga');
+   if (this.product.height == null || isNaN(Number(this.product.height))) invalidNumbers.push('Wysokość');
+   if (this.product.width == null || isNaN(Number(this.product.width))) invalidNumbers.push('Szerokość');
+   if (missing.length > 0) {
+     this.toast.show('error', 'Błąd', `Brakuje pól: ${missing.join(', ')}`);
+     return;
+   }
+   if (invalidNumbers.length > 0) {
+     this.toast.show('error', 'Błąd', `Nieprawidłowe wartości liczbowe: ${invalidNumbers.join(', ')}`);
+     return;
+   }
+   const payload = {
+     rfid: String(this.product.rfid).trim(),
+     name: String(this.product.name).trim(),
+     category: Number(this.product.category),
+     description: String(this.product.description).trim(),
+     weight: Number(this.product.weight),
+     height: Number(this.product.height),
+     width: Number(this.product.width),
+     spot: Number(this.product.spot),
+     contractor: Number(this.product.contractor)
+   };
+   if (isNaN(payload.category) || isNaN(payload.spot) || isNaN(payload.contractor)) {
+     this.toast.show('error', 'Błąd', 'Kategoria, miejsce i kontrahent muszą być poprawnymi wartościami.');
+     return;
+   }
+   this.http.post(apiUrl('/products'), payload, { withCredentials: true }).subscribe({
+     next: () => {
+       const spotId = Number(this.product.spot);
+       const place = this.places.find(p => p.id === spotId);
+       if (place) place._free = false;
+       this.clearAllFields();
+       this.toast.show('success', 'Sukces', 'Produkt został dodany');
+     },
+     error: (err) => {
+       const msg = err?.error?.message || 'Wystąpił błąd';
+       this.toast.show('error', 'Błąd', msg);
+       console.error('Błąd dodawania produktu:', err);
+     }
+   });
+}
 
   getPlacesForShelf(shelf_uuid: string): Place[] {
     return this.places.filter(p => p.shelf_uuid === shelf_uuid);
