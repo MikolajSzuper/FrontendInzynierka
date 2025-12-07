@@ -77,6 +77,14 @@ npm start
 npm run build
 ```
 
+### Testy
+
+```bash
+ng test --include='src/app/login/login.spec.ts'
+
+ng test --include='src/app/login/login.integration.spec.ts'
+```
+
 ## 👤 Role użytkowników
 
 | Rola | Uprawnienia |

@@ -66,6 +66,8 @@ export class Login {
 
   closeForgotModal() {
     this.showForgotModal = false;
+    this.forgotUsername = '';
+    this.forgotEmail = '';
   }
 
   sendForgotPassword() {
