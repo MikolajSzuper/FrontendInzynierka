@@ -24,7 +24,6 @@ export const routes: Routes = [
     component: MainLayout, 
     canActivate: [AuthGuard],
     children: [
-      // Ścieżki tylko dla administratora
       { 
         path: 'users', 
         component: Users, 
@@ -36,8 +35,6 @@ export const routes: Routes = [
         component: HelpRequest, 
         canActivate: [adminGuard]
       },
-      
-      // Ścieżki tylko dla zwykłego użytkownika
       { 
         path: 'halls', 
         component: Halls, 
@@ -75,17 +72,15 @@ export const routes: Routes = [
       },
       {
         path: 'product-history',
-        component: ProductHistory, // Dodaj import i komponent poniżej
+        component: ProductHistory,
         canActivate: [UserGuard]
       },
       
-      // Ścieżki wspólne
       { 
         path: 'help', 
         component: Help
       },
       
-      // Domyślne przekierowanie
       { 
         path: '', 
         redirectTo: localStorage.getItem('user_type') === 'ADMIN' ? 'users' : 'halls', 

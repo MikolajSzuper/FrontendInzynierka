@@ -45,7 +45,7 @@ export class Users implements OnInit {
   totalPages = 0;
   searchQuery = '';
   searchType: 'id' | 'name' = 'id';
-  pageSize = 10; // domyślna liczba wyników na stronę
+  pageSize = 10;
 
   newUser: Partial<User> & { password?: string } = {
     name: '',
@@ -148,12 +148,10 @@ export class Users implements OnInit {
       windowStart = Math.max(this.totalPages - visiblePages - 1, 1);
     }
     
-    // Dodaj wielokropek po pierwszej stronie, jeśli potrzeba
     if (windowStart > 1) {
-      pages.push(-1); // -1 oznacza wielokropek
+      pages.push(-1); 
     }
     
-    // Dodaj strony z "okna"
     for (let i = 0; i < visiblePages; i++) {
       const pageNum = windowStart + i;
       if (pageNum > 0 && pageNum < this.totalPages - 1) {
@@ -161,12 +159,10 @@ export class Users implements OnInit {
       }
     }
     
-    // Dodaj wielokropek przed ostatnią stroną, jeśli potrzeba
     if (windowStart + visiblePages < this.totalPages - 1) {
-      pages.push(-2); // -2 oznacza drugi wielokropek
+      pages.push(-2); 
     }
-    
-    // Zawsze dodaj ostatnią stronę, jeśli jest więcej niż jedna strona
+
     if (this.totalPages > 1) {
       pages.push(this.totalPages - 1);
     }

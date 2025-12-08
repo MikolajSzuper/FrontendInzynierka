@@ -19,10 +19,8 @@ export class MainLayout implements OnInit, OnDestroy {
   constructor(private authService: AuthService) {}
   
   ngOnInit() {
-    // Autoryzacja na start
     this.authService.checkAuth();
     
-    // Zmiany w autoryzacji
     this.authSubscription = this.authService.isAuthenticated$.subscribe(isAuth => {
       if (!isAuth) {
         console.log('[MainLayout] Utrata autoryzacji');

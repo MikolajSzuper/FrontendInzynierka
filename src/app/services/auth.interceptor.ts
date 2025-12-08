@@ -7,7 +7,6 @@ import { Router } from '@angular/router';
 import { apiUrl } from './api';
 
 function logout() {
-  // Wywołanie logout na backendzie
   fetch(apiUrl('/auth/logout'), {
     method: 'GET',
     credentials: 'include'
@@ -20,7 +19,6 @@ function logout() {
 
 async function validateAuth(http: HttpClient): Promise<boolean> {
   try {
-    //console.log('[AuthInterceptor] Sprawdzanie autoryzacji...');
     const user = await http.get<{ name: string; surname: string; userType: string }>(
       apiUrl('/auth/auto-login'), 
       { withCredentials: true }
@@ -29,12 +27,10 @@ async function validateAuth(http: HttpClient): Promise<boolean> {
     if (user) {
       localStorage.setItem('user_name', `${user.name} ${user.surname}`);
       localStorage.setItem('user_type', user.userType);
-      //console.log('[AuthInterceptor] Autoryzacja OK:', user);
       return true;
     }
     return false;
   } catch (err) {
-    //console.error('[AuthInterceptor] Błąd autoryzacji:', err);
     return false;
   }
 }

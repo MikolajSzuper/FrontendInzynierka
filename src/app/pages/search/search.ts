@@ -133,7 +133,6 @@ export class Search implements OnInit {
       },
       error: (err) => {
         this.products = [];
-        //this.toast.show('error', 'Błąd', 'Nie udało się pobrać produktów');
       }
     });
   }
@@ -143,7 +142,6 @@ export class Search implements OnInit {
       next: (data) => { this.contractors = data; },
       error: (err) => {
         const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
-        //this.toast.show('error', 'Błąd', msg);
         console.error('Błąd podczas pobierania kontrahentów:', err);
       }
     });
@@ -172,8 +170,6 @@ export class Search implements OnInit {
     this.http.get<{ id: number, name: string }[]>(apiUrl('/products/categories'), { withCredentials: true }).subscribe({
       next: (data) => { this.categories = data; },
       error: (err) => {
-        const msg = err?.error?.[0]?.message || 'Wystąpił błąd';
-        //this.toast.show('error', 'Błąd', msg);
         console.error('Błąd podczas pobierania kategorii:', err);
       }
     });
@@ -211,7 +207,7 @@ export class Search implements OnInit {
         };
       },
       error: () => {
-        //this.toast.show('error', 'Błąd', 'Nie udało się pobrać szczegółów produktu');
+        console.error('Błąd podczas pobierania szczegółów produktu');
       }
     });
   }
